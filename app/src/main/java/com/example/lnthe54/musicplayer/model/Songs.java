@@ -4,7 +4,7 @@ package com.example.lnthe54.musicplayer.model;
  * @author lnthe54 on 8/20/2018
  * @project MusicPlayer
  */
-public class Songs {
+public class Songs extends Albums {
     private String nameSong;
     private String author;
 
