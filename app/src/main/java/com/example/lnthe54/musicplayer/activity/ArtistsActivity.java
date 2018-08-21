@@ -4,11 +4,18 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.lnthe54.musicplayer.R;
+import com.example.lnthe54.musicplayer.adapter.ArtistsAdapter;
+import com.example.lnthe54.musicplayer.config.Config;
+import com.example.lnthe54.musicplayer.model.Artists;
+
+import java.util.ArrayList;
 
 public class ArtistsActivity extends Fragment {
     private static final String ARG_PARAM1 = "param1";
@@ -16,6 +23,10 @@ public class ArtistsActivity extends Fragment {
 
     private String mParam1;
     private String mParam2;
+
+    private RecyclerView rvArtist;
+    private ArrayList<Artists> listArtist;
+    private ArtistsAdapter artistsAdapter;
 
     private OnFragmentInteractionListener mListener;
 
@@ -42,7 +53,27 @@ public class ArtistsActivity extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_artists, container, false);
+        View view = inflater.inflate(R.layout.fragment_artists, container, false);
+
+        rvArtist = view.findViewById(R.id.rv_artists);
+        rvArtist.setLayoutManager(new GridLayoutManager(getContext(), Config.NUM_COLUMN));
+        rvArtist.setHasFixedSize(true);
+
+        listArtist = new ArrayList<>();
+
+        listArtist.add(new Artists("Den", "10 song | 4 album"));
+        listArtist.add(new Artists("Den", "10 song | 4 album"));
+        listArtist.add(new Artists("Den", "10 song | 4 album"));
+        listArtist.add(new Artists("Den", "10 song | 4 album"));
+        listArtist.add(new Artists("Den", "10 song | 4 album"));
+        listArtist.add(new Artists("Den", "10 song | 4 album"));
+        listArtist.add(new Artists("Den", "10 song | 4 album"));
+        listArtist.add(new Artists("Den", "10 song | 4 album"));
+
+        artistsAdapter = new ArtistsAdapter(listArtist);
+        rvArtist.setAdapter(artistsAdapter);
+
+        return view;
     }
 
     public void onButtonPressed(Uri uri) {

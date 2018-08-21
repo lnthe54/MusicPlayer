@@ -12,10 +12,8 @@ import android.view.ViewGroup;
 
 import com.example.lnthe54.musicplayer.R;
 import com.example.lnthe54.musicplayer.adapter.AlbumAdapter;
-import com.example.lnthe54.musicplayer.adapter.SongAdapter;
 import com.example.lnthe54.musicplayer.config.Config;
 import com.example.lnthe54.musicplayer.model.Albums;
-import com.example.lnthe54.musicplayer.model.Songs;
 
 import java.util.ArrayList;
 
@@ -59,16 +57,16 @@ public class AlbumsActivity extends Fragment {
         View view = inflater.inflate(R.layout.fragment_albums, container, false);
 
         rvListAlbum = view.findViewById(R.id.rv_albums);
-        rvListAlbum.setLayoutManager(new GridLayoutManager(getContext(), Config.NUM_COLUMS));
+        rvListAlbum.setLayoutManager(new GridLayoutManager(getContext(), Config.NUM_COLUMN));
         rvListAlbum.setHasFixedSize(true);
 
         listAlbum = new ArrayList<>();
 
-        listAlbum.add(new Albums(R.drawable.album1, "Dung Quen Ten Anh", "Hoa Vinh"));
+        listAlbum.add(new Albums(R.drawable.album1, "Di Theo Bong Mat Troi", "Den, Giang Nguyen"));
         listAlbum.add(new Albums(R.drawable.album2, "Dung Quen Ten Anh", "Hoa Vinh"));
-        listAlbum.add(new Albums(R.drawable.album3, "Dung Quen Ten Anh", "Hoa Vinh"));
-        listAlbum.add(new Albums(R.drawable.album4, "Dung Quen Ten Anh", "Hoa Vinh"));
-        listAlbum.add(new Albums(R.drawable.album5, "Dung Quen Ten Anh", "Hoa Vinh"));
+        listAlbum.add(new Albums(R.drawable.album3, "Ghe Qua", "Dick, ToFu"));
+        listAlbum.add(new Albums(R.drawable.album1, "Co Gai Ban Ben", "Den"));
+        listAlbum.add(new Albums(R.drawable.album5, "Benh Cua Anh", "Khoi"));
 
         albumAdapter = new AlbumAdapter(listAlbum);
 

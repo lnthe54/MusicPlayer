@@ -5,9 +5,10 @@ package com.example.lnthe54.musicplayer.config;
  * @project MusicPlayer
  */
 public class Config {
+    public static final String TITLE_TOOLBAR = "Beauty Music";
     public static final String SONGS = "SONGS";
     public static final String ALBUMS = "ALBUMS";
     public static final String ARTISTS = "ARTISTS";
-    public static final int NUM_COLUMS = 2;
+    public static final int NUM_COLUMN = 2;
 
 }

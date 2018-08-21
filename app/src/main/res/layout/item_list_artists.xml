@@ -2,13 +2,14 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:layout_margin="5dp">
+    android:layout_margin="5dp"
+    android:background="@color/bg_list_artists">
 
     <ImageView
-        android:id="@+id/iv_album"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/album1" />
+        android:layout_width="200dp"
+        android:layout_height="200dp"
+        android:layout_centerInParent="true"
+        android:src="@drawable/headphones" />
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -17,7 +18,7 @@
         android:padding="20dp">
 
         <TextView
-            android:id="@+id/tv_album"
+            android:id="@+id/tv_artists_name"
             style="?android:textAppearanceSmall"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -28,11 +29,11 @@
             android:textColor="@android:color/white" />
 
         <TextView
-            android:id="@+id/tv_authorAlbum"
+            android:id="@+id/tv_infor_artists"
             style="?android:textAppearanceSmall"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/tv_album"
+            android:layout_below="@id/tv_artists_name"
             android:layout_centerHorizontal="true"
             android:ellipsize="end"
             android:maxLines="1"

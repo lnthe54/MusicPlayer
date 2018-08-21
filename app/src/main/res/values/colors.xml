@@ -5,4 +5,5 @@
     <color name="colorAccent">#FF4081</color>
     <color name="color_line">#888888</color>
     <color name="text">#66CCFF</color>
+    <color name="bg_list_artists">#66CCFF</color>
 </resources>
