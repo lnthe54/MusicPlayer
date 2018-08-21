@@ -5,6 +5,7 @@
         android:id="@+id/icon_search"
         android:icon="@drawable/search"
         android:title="@string/icon_search"
+        app:actionViewClass="android.support.v7.widget.SearchView:"
         app:showAsAction="always"></item>
 
     <item

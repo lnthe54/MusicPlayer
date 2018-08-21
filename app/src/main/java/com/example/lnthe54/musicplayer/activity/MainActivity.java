@@ -7,16 +7,18 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
-import android.view.MenuInflater;
 
 import com.example.lnthe54.musicplayer.R;
 import com.example.lnthe54.musicplayer.adapter.PagerAdapter;
 import com.example.lnthe54.musicplayer.config.Config;
+import com.example.lnthe54.musicplayer.tab.AlbumsTab;
+import com.example.lnthe54.musicplayer.tab.ArtistsTab;
+import com.example.lnthe54.musicplayer.tab.SongsTab;
 
 public class MainActivity extends AppCompatActivity
-        implements SongsActivity.OnFragmentInteractionListener,
-        ArtistsActivity.OnFragmentInteractionListener,
-        AlbumsActivity.OnFragmentInteractionListener {
+        implements SongsTab.OnFragmentInteractionListener,
+        ArtistsTab.OnFragmentInteractionListener,
+        AlbumsTab.OnFragmentInteractionListener {
 
     private TabLayout tabLayout;
     private ViewPager viewPager;
@@ -45,9 +47,8 @@ public class MainActivity extends AppCompatActivity
         viewPager = findViewById(R.id.pager);
         pagerAdapter = new PagerAdapter(getSupportFragmentManager(), tabLayout.getTabCount());
         viewPager.setAdapter(pagerAdapter);
-        viewPager.setOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
-
-        tabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+        viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
+        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
                 viewPager.setCurrentItem(tab.getPosition());
@@ -67,8 +68,7 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.action_bar_main, menu);
+        getMenuInflater().inflate(R.menu.action_bar_main, menu);
         return true;
     }
 
@@ -76,4 +76,5 @@ public class MainActivity extends AppCompatActivity
     public void onFragmentInteraction(Uri uri) {
 
     }
+
 }

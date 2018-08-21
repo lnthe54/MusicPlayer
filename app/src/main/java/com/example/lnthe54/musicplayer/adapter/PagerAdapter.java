@@ -5,9 +5,9 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 
-import com.example.lnthe54.musicplayer.activity.AlbumsActivity;
-import com.example.lnthe54.musicplayer.activity.ArtistsActivity;
-import com.example.lnthe54.musicplayer.activity.SongsActivity;
+import com.example.lnthe54.musicplayer.tab.AlbumsTab;
+import com.example.lnthe54.musicplayer.tab.ArtistsTab;
+import com.example.lnthe54.musicplayer.tab.SongsTab;
 
 public class PagerAdapter extends FragmentStatePagerAdapter {
 
@@ -24,13 +24,13 @@ public class PagerAdapter extends FragmentStatePagerAdapter {
         switch (position) {
 
             case 0:
-                SongsActivity songs = new SongsActivity();
+                SongsTab songs = new SongsTab();
                 return songs;
             case 1:
-                AlbumsActivity albums = new AlbumsActivity();
+                AlbumsTab albums = new AlbumsTab();
                 return albums;
             case 2:
-                ArtistsActivity artists = new ArtistsActivity();
+                ArtistsTab artists = new ArtistsTab();
                 return artists;
             default:
                 return null;

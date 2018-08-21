@@ -1,4 +1,4 @@
-package com.example.lnthe54.musicplayer.activity;
+package com.example.lnthe54.musicplayer.tab;
 
 import android.content.Context;
 import android.net.Uri;
@@ -17,7 +17,7 @@ import com.example.lnthe54.musicplayer.model.Albums;
 
 import java.util.ArrayList;
 
-public class AlbumsActivity extends Fragment {
+public class AlbumsTab extends Fragment {
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
 
@@ -30,11 +30,11 @@ public class AlbumsActivity extends Fragment {
     private AlbumAdapter albumAdapter;
     private OnFragmentInteractionListener mListener;
 
-    public AlbumsActivity() {
+    public AlbumsTab() {
     }
 
-//    public static AlbumsActivity newInstance(String param1, String param2) {
-//        AlbumsActivity fragment = new AlbumsActivity();
+//    public static AlbumsTab newInstance(String param1, String param2) {
+//        AlbumsTab fragment = new AlbumsTab();
 //        Bundle args = new Bundle();
 //        args.putString(ARG_PARAM1, param1);
 //        args.putString(ARG_PARAM2, param2);

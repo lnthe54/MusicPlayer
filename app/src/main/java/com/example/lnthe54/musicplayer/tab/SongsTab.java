@@ -1,6 +1,7 @@
-package com.example.lnthe54.musicplayer.activity;
+package com.example.lnthe54.musicplayer.tab;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -11,12 +12,14 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.lnthe54.musicplayer.R;
+import com.example.lnthe54.musicplayer.activity.PlayMusicActivity;
 import com.example.lnthe54.musicplayer.adapter.SongAdapter;
+import com.example.lnthe54.musicplayer.config.Config;
 import com.example.lnthe54.musicplayer.model.Songs;
 
 import java.util.ArrayList;
 
-public class SongsActivity extends Fragment {
+public class SongsTab extends Fragment implements SongAdapter.onCallBack {
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
 
@@ -29,12 +32,12 @@ public class SongsActivity extends Fragment {
 
     private OnFragmentInteractionListener mListener;
 
-    public SongsActivity() {
+    public SongsTab() {
 
     }
 
-//    public static SongsActivity newInstance(String param1, String param2) {
-//        SongsActivity fragment = new SongsActivity();
+//    public static SongsTab newInstance(String param1, String param2) {
+//        SongsTab fragment = new SongsTab();
 //        Bundle args = new Bundle();
 //        args.putString(ARG_PARAM1, param1);
 //        args.putString(ARG_PARAM2, param2);
@@ -72,7 +75,7 @@ public class SongsActivity extends Fragment {
         listSong.add(new Songs("Im Lang", "LK, P.A"));
         listSong.add(new Songs("Mo", "Den, Hau Vi"));
 
-        songAdapter = new SongAdapter(listSong);
+        songAdapter = new SongAdapter(this, listSong);
 
         rvListSong.setAdapter(songAdapter);
         return view;
@@ -98,6 +101,14 @@ public class SongsActivity extends Fragment {
     public void onDetach() {
         super.onDetach();
         mListener = null;
+    }
+
+    @Override
+    public void onClickSong(int position) {
+        Intent openPlayMusic = new Intent(getContext(), PlayMusicActivity.class);
+        String nameSong = listSong.get(position).getNameSong();
+        openPlayMusic.putExtra(Config.NAME_SONG, nameSong);
+        startActivityForResult(openPlayMusic, Config.REQUEST_CODE);
     }
 
     public interface OnFragmentInteractionListener {
