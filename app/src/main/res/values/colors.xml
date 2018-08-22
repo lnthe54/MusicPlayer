@@ -6,4 +6,7 @@
     <color name="color_line">#888888</color>
     <color name="text">#66CCFF</color>
     <color name="bg_list_artists">#66CCFF</color>
+    <color name="point_color">#66CCFF</color>
+    <color name="point_halo_color">#66CCFF</color>
+    <color name="text_color">#66CCFF</color>
 </resources>

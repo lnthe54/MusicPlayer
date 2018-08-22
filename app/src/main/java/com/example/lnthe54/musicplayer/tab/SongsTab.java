@@ -26,7 +26,7 @@ public class SongsTab extends Fragment implements SongAdapter.onCallBack {
     private String mParam1;
     private String mParam2;
 
-    private RecyclerView rvListSong;
+    public static RecyclerView rvListSong;
     private SongAdapter songAdapter;
     private ArrayList<Songs> listSong;
 
@@ -107,7 +107,9 @@ public class SongsTab extends Fragment implements SongAdapter.onCallBack {
     public void onClickSong(int position) {
         Intent openPlayMusic = new Intent(getContext(), PlayMusicActivity.class);
         String nameSong = listSong.get(position).getNameSong();
+        String nameSinger = listSong.get(position).getAuthor();
         openPlayMusic.putExtra(Config.NAME_SONG, nameSong);
+        openPlayMusic.putExtra(Config.NAME_SINGER, nameSinger);
         startActivityForResult(openPlayMusic, Config.REQUEST_CODE);
     }
 

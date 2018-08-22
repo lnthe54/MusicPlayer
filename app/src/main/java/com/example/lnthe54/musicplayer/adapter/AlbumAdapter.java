@@ -19,8 +19,10 @@ import java.util.List;
  */
 public class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.ViewHolder> {
     private List<Albums> listAlbums;
+    private onCallBack clickAlbum;
 
-    public AlbumAdapter(List<Albums> listAlbums) {
+    public AlbumAdapter(onCallBack clickAlbum, List<Albums> listAlbums) {
+        this.clickAlbum = clickAlbum;
         this.listAlbums = listAlbums;
     }
 
@@ -48,6 +50,10 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.ViewHolder> 
         return 0;
     }
 
+    public interface onCallBack {
+        void onClickAlbum(int position);
+    }
+
     public class ViewHolder extends RecyclerView.ViewHolder {
         TextView tvNameAlbum, tvAuthor;
         ImageView ivAlbum;
@@ -57,6 +63,13 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.ViewHolder> 
             tvNameAlbum = itemView.findViewById(R.id.tv_album);
             tvAuthor = itemView.findViewById(R.id.tv_authorAlbum);
             ivAlbum = itemView.findViewById(R.id.iv_album);
+
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    clickAlbum.onClickAlbum(getAdapterPosition());
+                }
+            });
         }
     }
 }

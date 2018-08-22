@@ -24,7 +24,7 @@ public class ArtistsTab extends Fragment {
     private String mParam1;
     private String mParam2;
 
-    private RecyclerView rvArtist;
+    public static RecyclerView rvArtist;
     private ArrayList<Artists> listArtist;
     private ArtistsAdapter artistsAdapter;
 
