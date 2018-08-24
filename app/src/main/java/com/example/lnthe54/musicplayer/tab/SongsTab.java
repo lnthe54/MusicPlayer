@@ -1,9 +1,12 @@
 package com.example.lnthe54.musicplayer.tab;
 
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -18,6 +21,8 @@ import com.example.lnthe54.musicplayer.config.Config;
 import com.example.lnthe54.musicplayer.model.Songs;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 public class SongsTab extends Fragment implements SongAdapter.onCallBack {
     private static final String ARG_PARAM1 = "param1";
@@ -64,21 +69,36 @@ public class SongsTab extends Fragment implements SongAdapter.onCallBack {
         rvListSong.setHasFixedSize(true);
 
         listSong = new ArrayList<>();
-
-        listSong.add(new Songs("Dung Quen Ten Anh", "Hoa Vinh"));
-        listSong.add(new Songs("Ghe Qua", "Dick, Tofu"));
-        listSong.add(new Songs("Sai Gon Funky", "Dick, 2Can"));
-        listSong.add(new Songs("Co Gai Ban Ben", "Den, Lynk Lee"));
-        listSong.add(new Songs("Benh Cua Anh", "Khoi"));
-        listSong.add(new Songs("Ghe Qua", "Den"));
-        listSong.add(new Songs("Di Theo Bong Mat Troi", "Den, Giang Nguyen"));
-        listSong.add(new Songs("Im Lang", "LK, P.A"));
-        listSong.add(new Songs("Mo", "Den, Hau Vi"));
-
+        getMusic();
         songAdapter = new SongAdapter(this, listSong);
 
         rvListSong.setAdapter(songAdapter);
         return view;
+    }
+
+    public void getMusic() {
+        ContentResolver contentResolver = getContext().getContentResolver();
+        Uri song = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
+        Cursor songCursor = contentResolver.query(song, null, null, null, null, null);
+
+        if (song != null && songCursor.moveToFirst()) {
+            int songTitle = songCursor.getColumnIndex(MediaStore.Audio.Media.TITLE);
+            int songArtists = songCursor.getColumnIndex(MediaStore.Audio.Media.ARTIST);
+
+            do {
+                String currentTitle = songCursor.getString(songTitle);
+                String currentArtists = songCursor.getString(songArtists);
+
+                listSong.add(new Songs(currentTitle, currentArtists));
+
+                Collections.sort(listSong, new Comparator<Songs>() {
+                    @Override
+                    public int compare(Songs lhs, Songs rhs) {
+                        return lhs.getNameSong().compareTo(rhs.getNameSong());
+                    }
+                });
+            } while (songCursor.moveToNext());
+        }
     }
 
     public void onButtonPressed(Uri uri) {
