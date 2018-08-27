@@ -1,6 +1,7 @@
 package com.example.lnthe54.musicplayer.tab;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -11,13 +12,14 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.lnthe54.musicplayer.R;
+import com.example.lnthe54.musicplayer.activity.SongAccordingArtist;
 import com.example.lnthe54.musicplayer.adapter.ArtistsAdapter;
 import com.example.lnthe54.musicplayer.config.Config;
 import com.example.lnthe54.musicplayer.model.Artists;
 
 import java.util.ArrayList;
 
-public class ArtistsTab extends Fragment {
+public class ArtistsTab extends Fragment implements ArtistsAdapter.OnCallBack {
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
 
@@ -62,15 +64,9 @@ public class ArtistsTab extends Fragment {
         listArtist = new ArrayList<>();
 
         listArtist.add(new Artists("Den", "10 song | 4 album"));
-        listArtist.add(new Artists("Den", "10 song | 4 album"));
-        listArtist.add(new Artists("Den", "10 song | 4 album"));
-        listArtist.add(new Artists("Den", "10 song | 4 album"));
-        listArtist.add(new Artists("Den", "10 song | 4 album"));
-        listArtist.add(new Artists("Den", "10 song | 4 album"));
-        listArtist.add(new Artists("Den", "10 song | 4 album"));
-        listArtist.add(new Artists("Den", "10 song | 4 album"));
+        listArtist.add(new Artists("Hoa Vinh", "3 song | 1 album"));
 
-        artistsAdapter = new ArtistsAdapter(listArtist);
+        artistsAdapter = new ArtistsAdapter(this, listArtist);
         rvArtist.setAdapter(artistsAdapter);
 
         return view;
@@ -97,6 +93,16 @@ public class ArtistsTab extends Fragment {
     public void onDetach() {
         super.onDetach();
         mListener = null;
+    }
+
+    @Override
+    public void itemClick(int position) {
+        Intent openArtist = new Intent(getContext(), SongAccordingArtist.class);
+
+        String nameSinger = listArtist.get(position).getNameArtist();
+
+        openArtist.putExtra(Config.NAME_SINGER, nameSinger);
+        startActivityForResult(openArtist, Config.REQUEST_CODE);
     }
 
     public interface OnFragmentInteractionListener {

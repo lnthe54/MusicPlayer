@@ -12,6 +12,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.example.lnthe54.musicplayer.R;
 import com.example.lnthe54.musicplayer.adapter.PagerAdapter;
@@ -29,7 +30,8 @@ public class MainActivity extends AppCompatActivity
     private ViewPager viewPager;
     private PagerAdapter pagerAdapter;
     private Toolbar toolbar;
-    private ImageView ivPlay, ivPause;
+    public static ImageView ivPlay, ivPause;
+    public static TextView tvNameSongPlaying, tvAuthorSongPlaying;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,6 +74,9 @@ public class MainActivity extends AppCompatActivity
 
             }
         });
+
+        tvNameSongPlaying = findViewById(R.id.tv_name_song_playing);
+        tvAuthorSongPlaying = findViewById(R.id.tv_author_song_playing);
 
         ivPlay = findViewById(R.id.iv_play);
         ivPause = findViewById(R.id.iv_pause);

@@ -8,6 +8,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 
@@ -26,7 +27,7 @@ public class PlayMusicActivity extends AppCompatActivity implements SongAdapter.
     private Toolbar toolbar;
     private ImageView ivPreviousTrack, ivNextTrack, ivPlay, ivPause;
     private RecyclerView rvSong;
-    private ArrayList<Songs> listSong;
+    private ArrayList<Songs> listSong = new ArrayList<>();
     private SongAdapter songAdapter;
 
     private String nameSong;
@@ -40,6 +41,8 @@ public class PlayMusicActivity extends AppCompatActivity implements SongAdapter.
         Intent intent = getIntent();
         nameSong = intent.getStringExtra(Config.NAME_SONG);
         nameSinger = intent.getStringExtra(Config.NAME_SINGER);
+        listSong = intent.getParcelableArrayListExtra(Config.LIST_SONG);
+
         initViews();
         addEvents();
     }
@@ -57,18 +60,6 @@ public class PlayMusicActivity extends AppCompatActivity implements SongAdapter.
         rvSong = findViewById(R.id.rv_song);
         rvSong.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
         rvSong.setHasFixedSize(true);
-
-        listSong = new ArrayList<>();
-
-        listSong.add(new Songs("Dung Quen Ten Anh", "Hoa Vinh"));
-        listSong.add(new Songs("Ghe Qua", "Dick, Tofu"));
-        listSong.add(new Songs("Sai Gon Funky", "Dick, 2Can"));
-        listSong.add(new Songs("Co Gai Ban Ben", "Den, Lynk Lee"));
-        listSong.add(new Songs("Benh Cua Anh", "Khoi"));
-        listSong.add(new Songs("Ghe Qua", "Den"));
-        listSong.add(new Songs("Di Theo Bong Mat Troi", "Den, Giang Nguyen"));
-        listSong.add(new Songs("Im Lang", "LK, P.A"));
-        listSong.add(new Songs("Mo", "Den, Hau Vi"));
 
         songAdapter = new SongAdapter(this, listSong);
 
@@ -90,8 +81,33 @@ public class PlayMusicActivity extends AppCompatActivity implements SongAdapter.
     }
 
     @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home: {
+                Intent intent = new Intent();
+                intent.putExtra(Config.NAME_SONG, nameSong);
+                intent.putExtra(Config.NAME_SINGER, nameSinger);
+                setResult(RESULT_OK, intent);
+                finish();
+                break;
+            }
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
     public void onClickSong(int position) {
 
+    }
+
+    @Override
+    public void onBackPressed() {
+        Intent intent = new Intent();
+        intent.putExtra(Config.NAME_SONG, nameSong);
+        intent.putExtra(Config.NAME_SINGER, nameSinger);
+        setResult(RESULT_OK, intent);
+        finish();
     }
 
     @Override

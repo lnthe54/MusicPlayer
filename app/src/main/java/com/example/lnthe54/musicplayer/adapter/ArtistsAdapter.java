@@ -18,9 +18,11 @@ import java.util.List;
  */
 public class ArtistsAdapter extends RecyclerView.Adapter<ArtistsAdapter.ViewHolder> {
 
+    private OnCallBack clickItem;
     private List<Artists> listArtist;
 
-    public ArtistsAdapter(List<Artists> listArtist) {
+    public ArtistsAdapter(OnCallBack clickItem, List<Artists> listArtist) {
+        this.clickItem = clickItem;
         this.listArtist = listArtist;
     }
 
@@ -46,6 +48,10 @@ public class ArtistsAdapter extends RecyclerView.Adapter<ArtistsAdapter.ViewHold
         return 0;
     }
 
+    public interface OnCallBack {
+        void itemClick(int position);
+    }
+
     public class ViewHolder extends RecyclerView.ViewHolder {
         TextView tvNameArtist, tvInforArtist;
 
@@ -54,6 +60,13 @@ public class ArtistsAdapter extends RecyclerView.Adapter<ArtistsAdapter.ViewHold
 
             tvNameArtist = itemView.findViewById(R.id.tv_artists_name);
             tvInforArtist = itemView.findViewById(R.id.tv_infor_artists);
+
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    clickItem.itemClick(getAdapterPosition());
+                }
+            });
         }
     }
 }

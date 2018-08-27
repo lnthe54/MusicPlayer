@@ -22,7 +22,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/toolbar"
         android:background="#CF000000"
-        android:padding="75dp">
+        android:padding="50dp">
 
         <ImageView
             android:id="@+id/iv_bg_play"

@@ -9,9 +9,6 @@ public class Albums {
     private String author;
     private int image;
 
-    public Albums() {
-    }
-
     public Albums(int image, String nameAlbum, String author) {
         this.image = image;
         this.nameAlbum = nameAlbum;
@@ -28,10 +25,6 @@ public class Albums {
 
     public String getNameAlbum() {
         return nameAlbum;
-    }
-
-    public void setNameAlbum(String nameAlbum) {
-        this.nameAlbum = nameAlbum;
     }
 
     public String getAuthor() {

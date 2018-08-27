@@ -14,5 +14,6 @@ public class Config {
     public static final int NUM_COLUMN = 2;
     public static final int REQUEST_CODE = 2;
     public static final String IMAGE = "image";
+    public static final String LIST_SONG = "list song";
 
 }

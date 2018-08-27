@@ -8,9 +8,6 @@ public class Artists {
     private String nameArtist;
     private String inforArtist;
 
-    public Artists() {
-    }
-
     public Artists(String nameArtist, String inforArtist) {
         this.nameArtist = nameArtist;
         this.inforArtist = inforArtist;
@@ -20,15 +17,7 @@ public class Artists {
         return nameArtist;
     }
 
-    public void setNameArtist(String nameArtist) {
-        this.nameArtist = nameArtist;
-    }
-
     public String getInforArtist() {
         return inforArtist;
-    }
-
-    public void setInforArtist(String inforArtist) {
-        this.inforArtist = inforArtist;
     }
 }

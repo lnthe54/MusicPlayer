@@ -45,6 +45,30 @@
             android:padding="5dp"
             android:src="@drawable/beats_logo1" />
 
+        <TextView
+            android:id="@+id/tv_name_song_playing"
+            style="?android:textAppearanceLarge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@id/seek_bar"
+            android:layout_below="@id/seek_bar"
+            android:layout_toLeftOf="@id/iv_play"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:minLines="1" />
+
+        <TextView
+            android:id="@+id/tv_author_song_playing"
+            style="?android:textAppearanceMedium"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@id/tv_name_song_playing"
+            android:layout_below="@id/tv_name_song_playing"
+            android:layout_toLeftOf="@id/iv_play"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:minLines="1" />
+
         <SeekBar
             android:id="@+id/seek_bar"
             android:layout_width="wrap_content"

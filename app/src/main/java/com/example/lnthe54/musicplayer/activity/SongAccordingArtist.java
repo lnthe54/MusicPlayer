@@ -25,13 +25,12 @@ import java.util.Collections;
 import java.util.Comparator;
 
 /**
- * @author lnthe54 on 8/22/2018
+ * @author lnthe54 on 8/27/2018
  * @project MusicPlayer
  */
-public class SongAccordingAlbum extends AppCompatActivity implements SongAdapter.onCallBack {
-
+public class SongAccordingArtist extends AppCompatActivity implements SongAdapter.onCallBack {
     private Toolbar toolbar;
-    private ImageView ivAlbumBG, ivAlbum;
+    private ImageView ivArtistBG, ivArtist;
     private RecyclerView rvList;
     private String nameSinger;
     private int image;
@@ -41,11 +40,10 @@ public class SongAccordingAlbum extends AppCompatActivity implements SongAdapter
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_according_album);
+        setContentView(R.layout.activity_according_artist);
 
         Intent intent = getIntent();
         nameSinger = intent.getStringExtra(Config.NAME_SINGER);
-        image = intent.getIntExtra(Config.IMAGE, 0);
         initViews();
     }
 
@@ -55,14 +53,9 @@ public class SongAccordingAlbum extends AppCompatActivity implements SongAdapter
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         setTitle(nameSinger);
 
-        ivAlbumBG = findViewById(R.id.iv_album_bg);
-        ivAlbumBG.setImageResource(image);
-
-        ivAlbum = findViewById(R.id.iv_album);
-        ivAlbum.setImageResource(image);
-
         rvList = findViewById(R.id.rv_list);
-        rvList.setLayoutManager(new LinearLayoutManager(SongAccordingAlbum.this, LinearLayoutManager.VERTICAL, false));
+        rvList.setLayoutManager(new LinearLayoutManager(SongAccordingArtist.this,
+                LinearLayoutManager.VERTICAL, false));
         rvList.setHasFixedSize(true);
 
         listSong = new ArrayList<>();
@@ -104,10 +97,6 @@ public class SongAccordingAlbum extends AppCompatActivity implements SongAdapter
         return true;
     }
 
-    @Override
-    public void onClickSong(int position) {
-
-    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -120,5 +109,10 @@ public class SongAccordingAlbum extends AppCompatActivity implements SongAdapter
             }
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onClickSong(int position) {
+
     }
 }
