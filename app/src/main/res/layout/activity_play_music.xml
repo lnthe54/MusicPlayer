@@ -15,20 +15,19 @@
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light"></android.support.v7.widget.Toolbar>
 
-
     <RelativeLayout
         android:id="@+id/view_play"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/toolbar"
-        android:background="#CF000000"
-        android:padding="50dp">
+        android:background="#CF000000">
 
         <ImageView
             android:id="@+id/iv_bg_play"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
+            android:layout_margin="30dp"
             android:src="@drawable/beats_logo2" />
 
         <ImageView
@@ -36,6 +35,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
+            android:layout_marginLeft="20dp"
             android:src="@drawable/previous_track" />
 
         <ImageView
@@ -44,7 +44,31 @@
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
+            android:layout_marginRight="20dp"
             android:src="@drawable/next_track" />
+
+        <ImageView
+            android:id="@+id/iv_repeat"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignRight="@id/iv_bg_play"
+            android:layout_below="@+id/iv_bg_play"
+            android:src="@drawable/repeat_button" />
+
+        <ImageView
+            android:id="@+id/iv_shuffle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@id/iv_bg_play"
+            android:layout_below="@+id/iv_bg_play"
+            android:src="@drawable/shuffle_button" />
+
+        <SeekBar
+            android:id="@+id/sb_play"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/iv_repeat"
+            android:layout_margin="5dp" />
     </RelativeLayout>
 
     <android.support.v7.widget.RecyclerView
@@ -52,7 +76,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/view_play"></android.support.v7.widget.RecyclerView>
-
 
     <ImageView
         android:id="@+id/iv_pause"

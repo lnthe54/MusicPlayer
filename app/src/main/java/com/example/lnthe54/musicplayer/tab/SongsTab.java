@@ -4,7 +4,6 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
-import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -37,9 +36,9 @@ public class SongsTab extends Fragment implements SongAdapter.onCallBack {
     private String mParam2;
 
     public static RecyclerView rvListSong;
-    private SongAdapter songAdapter;
+    public static SongAdapter songAdapter;
     private Uri song;
-    private ArrayList<Songs> listSong;
+    public static ArrayList<Songs> listSong;
 
     private OnFragmentInteractionListener mListener;
 
@@ -143,7 +142,6 @@ public class SongsTab extends Fragment implements SongAdapter.onCallBack {
         bundle.putParcelableArrayList(Config.LIST_SONG, listSong);
 
         startActivityForResult(openPlayMusic, Config.REQUEST_CODE);
-
     }
 
     @Override

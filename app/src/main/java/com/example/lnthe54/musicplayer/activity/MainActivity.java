@@ -12,19 +12,24 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
+import android.support.v7.widget.SearchView;
 import android.widget.TextView;
 
 import com.example.lnthe54.musicplayer.R;
 import com.example.lnthe54.musicplayer.adapter.PagerAdapter;
 import com.example.lnthe54.musicplayer.config.Config;
+import com.example.lnthe54.musicplayer.model.Songs;
 import com.example.lnthe54.musicplayer.tab.AlbumsTab;
 import com.example.lnthe54.musicplayer.tab.ArtistsTab;
 import com.example.lnthe54.musicplayer.tab.SongsTab;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class MainActivity extends AppCompatActivity
         implements SongsTab.OnFragmentInteractionListener,
         ArtistsTab.OnFragmentInteractionListener,
-        AlbumsTab.OnFragmentInteractionListener, View.OnClickListener {
+        AlbumsTab.OnFragmentInteractionListener, View.OnClickListener, SearchView.OnQueryTextListener {
 
     private TabLayout tabLayout;
     private ViewPager viewPager;
@@ -106,6 +111,9 @@ public class MainActivity extends AppCompatActivity
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.action_bar_main, menu);
+        MenuItem item = menu.findItem(R.id.icon_search);
+        SearchView searchView = (SearchView) item.getActionView();
+        searchView.setOnQueryTextListener(this);
         return true;
     }
 
@@ -131,5 +139,25 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onFragmentInteraction(Uri uri) {
 
+    }
+
+    @Override
+    public boolean onQueryTextSubmit(String query) {
+        return false;
+    }
+
+    @Override
+    public boolean onQueryTextChange(String text) {
+        String userInput = text.toLowerCase();
+        List<Songs> newList = new ArrayList<>();
+        for (Songs songs : SongsTab.listSong) {
+            if (songs.getNameSong().toLowerCase().contains(userInput) ||
+                    songs.getAuthor().toLowerCase().contains(userInput)) {
+                newList.add(songs);
+            }
+        }
+
+        SongsTab.songAdapter.updateList(newList);
+        return true;
     }
 }

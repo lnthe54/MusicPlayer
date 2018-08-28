@@ -11,6 +11,7 @@ import android.widget.TextView;
 import com.example.lnthe54.musicplayer.R;
 import com.example.lnthe54.musicplayer.model.Songs;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -70,5 +71,11 @@ public class SongAdapter extends RecyclerView.Adapter<SongAdapter.ViewHolder> {
                 }
             });
         }
+    }
+
+    public void updateList(List<Songs> newListSong) {
+        listSong = new ArrayList<>();
+        listSong.addAll(newListSong);
+        notifyDataSetChanged();
     }
 }
