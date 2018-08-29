@@ -72,14 +72,16 @@ public class SongAccordingArtist extends AppCompatActivity implements SongAdapte
         Cursor songCursor = contentResolver.query(song, null, null, null, null, null);
 
         if (song != null && songCursor.moveToFirst()) {
+            int songID = songCursor.getColumnIndex(MediaStore.Audio.Media._ID);
             int songTitle = songCursor.getColumnIndex(MediaStore.Audio.Media.TITLE);
             int songArtists = songCursor.getColumnIndex(MediaStore.Audio.Media.ARTIST);
 
             do {
+                long currentId = songCursor.getLong(songID);
                 String currentTitle = songCursor.getString(songTitle);
                 String currentArtists = songCursor.getString(songArtists);
 
-                listSong.add(new Songs(currentTitle, currentArtists));
+                listSong.add(new Songs(currentId, currentTitle, currentArtists));
 
                 Collections.sort(listSong, new Comparator<Songs>() {
                     @Override

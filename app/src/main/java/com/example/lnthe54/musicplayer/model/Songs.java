@@ -8,12 +8,22 @@ import android.os.Parcelable;
  * @project MusicPlayer
  */
 public class Songs implements Parcelable {
+    private long id;
     private String nameSong;
     private String author;
 
-    public Songs(String nameSong, String author) {
+    public Songs(long id, String nameSong, String author) {
+        this.id = id;
         this.nameSong = nameSong;
         this.author = author;
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
     }
 
     public String getNameSong() {

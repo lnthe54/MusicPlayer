@@ -63,12 +63,6 @@
             android:layout_below="@+id/iv_bg_play"
             android:src="@drawable/shuffle_button" />
 
-        <SeekBar
-            android:id="@+id/sb_play"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/iv_repeat"
-            android:layout_margin="5dp" />
     </RelativeLayout>
 
     <android.support.v7.widget.RecyclerView

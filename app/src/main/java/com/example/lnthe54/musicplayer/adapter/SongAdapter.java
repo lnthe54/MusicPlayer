@@ -1,6 +1,5 @@
 package com.example.lnthe54.musicplayer.adapter;
 
-import android.media.MediaPlayer;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -22,7 +21,6 @@ public class SongAdapter extends RecyclerView.Adapter<SongAdapter.ViewHolder> {
 
     private List<Songs> listSong;
     private onCallBack clickSong;
-    private MediaPlayer mediaPlayer;
 
     public SongAdapter(onCallBack clickSong, List<Songs> listSong) {
         this.clickSong = clickSong;

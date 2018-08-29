@@ -1,7 +1,11 @@
 package com.example.lnthe54.musicplayer.activity;
 
+import android.content.ContentUris;
 import android.content.Intent;
+import android.media.MediaPlayer;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -17,6 +21,7 @@ import com.example.lnthe54.musicplayer.adapter.SongAdapter;
 import com.example.lnthe54.musicplayer.config.Config;
 import com.example.lnthe54.musicplayer.model.Songs;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 /**
@@ -32,6 +37,7 @@ public class PlayMusicActivity extends AppCompatActivity implements SongAdapter.
 
     private String nameSong;
     private String nameSinger;
+    private long id;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -41,10 +47,12 @@ public class PlayMusicActivity extends AppCompatActivity implements SongAdapter.
         Intent intent = getIntent();
         nameSong = intent.getStringExtra(Config.NAME_SONG);
         nameSinger = intent.getStringExtra(Config.NAME_SINGER);
+        id = intent.getLongExtra(Config.ID_SONG, 0);
         listSong = intent.getParcelableArrayListExtra(Config.LIST_SONG);
 
         initViews();
         addEvents();
+        setPlayMusic();
     }
 
     private void initViews() {
@@ -124,5 +132,23 @@ public class PlayMusicActivity extends AppCompatActivity implements SongAdapter.
                 break;
             }
         }
+    }
+
+    public void setPlayMusic() {
+        Uri uri = ContentUris.withAppendedId(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, id);
+        MediaPlayer mediaPlayer = new MediaPlayer();
+        try {
+            mediaPlayer.setDataSource(getApplicationContext(), uri);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        try {
+            mediaPlayer.prepare();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        mediaPlayer.start();
     }
 }

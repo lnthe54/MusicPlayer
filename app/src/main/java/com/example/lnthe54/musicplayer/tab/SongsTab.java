@@ -37,7 +37,7 @@ public class SongsTab extends Fragment implements SongAdapter.onCallBack {
 
     public static RecyclerView rvListSong;
     public static SongAdapter songAdapter;
-    private Uri song;
+    public static Uri song;
     public static ArrayList<Songs> listSong;
 
     private OnFragmentInteractionListener mListener;
@@ -78,8 +78,10 @@ public class SongsTab extends Fragment implements SongAdapter.onCallBack {
         songAdapter = new SongAdapter(this, listSong);
 
         rvListSong.setAdapter(songAdapter);
+
         return view;
     }
+
 
     public void getMusic() {
         ContentResolver contentResolver = getContext().getContentResolver();
@@ -87,14 +89,16 @@ public class SongsTab extends Fragment implements SongAdapter.onCallBack {
         Cursor songCursor = contentResolver.query(song, null, null, null, null, null);
 
         if (song != null && songCursor.moveToFirst()) {
+            int idColumn = songCursor.getColumnIndex(MediaStore.Audio.Media._ID);
             int songTitle = songCursor.getColumnIndex(MediaStore.Audio.Media.TITLE);
             int songArtists = songCursor.getColumnIndex(MediaStore.Audio.Media.ARTIST);
 
             do {
+                long currentId = songCursor.getLong(idColumn);
                 String currentTitle = songCursor.getString(songTitle);
                 String currentArtists = songCursor.getString(songArtists);
 
-                listSong.add(new Songs(currentTitle, currentArtists));
+                listSong.add(new Songs(currentId, currentTitle, currentArtists));
 
                 Collections.sort(listSong, new Comparator<Songs>() {
                     @Override
@@ -132,11 +136,13 @@ public class SongsTab extends Fragment implements SongAdapter.onCallBack {
     public void onClickSong(int position) {
         Intent openPlayMusic = new Intent(getContext(), PlayMusicActivity.class);
 
+        long songId = listSong.get(position).getId();
         String nameSong = listSong.get(position).getNameSong();
         String nameSinger = listSong.get(position).getAuthor();
 
         openPlayMusic.putExtra(Config.NAME_SONG, nameSong);
         openPlayMusic.putExtra(Config.NAME_SINGER, nameSinger);
+        openPlayMusic.putExtra(Config.ID_SONG, songId);
 
         Bundle bundle = new Bundle();
         bundle.putParcelableArrayList(Config.LIST_SONG, listSong);

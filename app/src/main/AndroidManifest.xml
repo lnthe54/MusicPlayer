@@ -21,6 +21,7 @@
         <activity android:name=".activity.PlayMusicActivity" />
         <activity android:name=".activity.SongAccordingAlbum" />
         <activity android:name=".activity.SongAccordingArtist" />
+
     </application>
 
 </manifest>

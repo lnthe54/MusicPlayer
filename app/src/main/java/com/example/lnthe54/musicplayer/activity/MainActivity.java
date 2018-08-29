@@ -1,18 +1,22 @@
 package com.example.lnthe54.musicplayer.activity;
 
+import android.Manifest;
+import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
-import android.support.v7.widget.SearchView;
 import android.widget.TextView;
 
 import com.example.lnthe54.musicplayer.R;
@@ -37,14 +41,42 @@ public class MainActivity extends AppCompatActivity
     private Toolbar toolbar;
     public static ImageView ivPlay, ivPause;
     public static TextView tvNameSongPlaying, tvAuthorSongPlaying;
+    private String[] permissions = {Manifest.permission.READ_EXTERNAL_STORAGE};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        if (checkPermissions() == false) {
+            return;
+        }
+
         initViews();
         addEvents();
+    }
+
+    private boolean checkPermissions() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            for (String check : permissions) {
+                int status = checkSelfPermission(check);
+                if (status == PackageManager.PERMISSION_DENIED) {
+                    requestPermissions(permissions, 0);
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if (checkPermissions() == true) {
+            initViews();
+        } else {
+            finish();
+        }
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 
     private void initViews() {
