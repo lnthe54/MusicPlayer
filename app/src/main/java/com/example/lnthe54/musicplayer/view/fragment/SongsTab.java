@@ -1,4 +1,4 @@
-package com.example.lnthe54.musicplayer.tab;
+package com.example.lnthe54.musicplayer.view.fragment;
 
 import android.content.ContentResolver;
 import android.content.Context;
@@ -16,11 +16,11 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.example.lnthe54.musicplayer.R;
-import com.example.lnthe54.musicplayer.activity.MainActivity;
-import com.example.lnthe54.musicplayer.activity.PlayMusicActivity;
+import com.example.lnthe54.musicplayer.presenter.playmusic.PlayMusicPresenter;
+import com.example.lnthe54.musicplayer.view.activity.PlayMusicActivity;
 import com.example.lnthe54.musicplayer.adapter.SongAdapter;
 import com.example.lnthe54.musicplayer.config.Config;
-import com.example.lnthe54.musicplayer.model.Songs;
+import com.example.lnthe54.musicplayer.model.entity.Songs;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -28,45 +28,24 @@ import java.util.Comparator;
 
 import static android.app.Activity.RESULT_OK;
 
-public class SongsTab extends Fragment implements SongAdapter.onCallBack {
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    private String mParam1;
-    private String mParam2;
+public class SongsTab extends Fragment implements SongAdapter.onCallBack, PlayMusicPresenter.PlayMusicActivity {
 
     public static RecyclerView rvListSong;
     public static SongAdapter songAdapter;
     public static Uri song;
     public static ArrayList<Songs> listSong;
 
+    private PlayMusicPresenter mainPresenter;
     private OnFragmentInteractionListener mListener;
 
     public SongsTab() {
 
     }
 
-//    public static SongsTab newInstance(String param1, String param2) {
-//        SongsTab fragment = new SongsTab();
-//        Bundle args = new Bundle();
-//        args.putString(ARG_PARAM1, param1);
-//        args.putString(ARG_PARAM2, param2);
-//        fragment.setArguments(args);
-//        return fragment;
-//    }
-//
-//    @Override
-//    public void onCreate(Bundle savedInstanceState) {
-//        super.onCreate(savedInstanceState);
-//        if (getArguments() != null) {
-//            mParam1 = getArguments().getString(ARG_PARAM1);
-//            mParam2 = getArguments().getString(ARG_PARAM2);
-//        }
-//    }
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_songs, container, false);
+        mainPresenter = new PlayMusicPresenter(this);
 
         rvListSong = view.findViewById(R.id.rv_songs);
         rvListSong.setLayoutManager(new LinearLayoutManager(getContext(),
@@ -134,6 +113,32 @@ public class SongsTab extends Fragment implements SongAdapter.onCallBack {
 
     @Override
     public void onClickSong(int position) {
+        mainPresenter.showPlayMusicActivity(position);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == Config.REQUEST_CODE) {
+            if (resultCode == RESULT_OK) {
+                if (data != null) {
+
+                    String nameSong = data.getStringExtra(Config.NAME_SONG);
+                    String singerSong = data.getStringExtra(Config.NAME_SINGER);
+
+//                    MainActivity.tvNameSongPlaying.setText(nameSong);
+//                    MainActivity.tvAuthorSongPlaying.setText(singerSong);
+//                    MainActivity.ivPause.setVisibility(View.VISIBLE);
+//                    MainActivity.ivPlay.setVisibility(View.INVISIBLE);
+                }
+            } else {
+                Toast.makeText(getContext(), "Message", Toast.LENGTH_SHORT).show();
+            }
+        }
+        super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    @Override
+    public void showPlayMusicActivity(int position) {
         Intent openPlayMusic = new Intent(getContext(), PlayMusicActivity.class);
 
         long songId = listSong.get(position).getId();
@@ -148,27 +153,6 @@ public class SongsTab extends Fragment implements SongAdapter.onCallBack {
         bundle.putParcelableArrayList(Config.LIST_SONG, listSong);
 
         startActivityForResult(openPlayMusic, Config.REQUEST_CODE);
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == Config.REQUEST_CODE) {
-            if (resultCode == RESULT_OK) {
-                if (data != null) {
-
-                    String nameSong = data.getStringExtra(Config.NAME_SONG);
-                    String singerSong = data.getStringExtra(Config.NAME_SINGER);
-
-                    MainActivity.tvNameSongPlaying.setText(nameSong);
-                    MainActivity.tvAuthorSongPlaying.setText(singerSong);
-                    MainActivity.ivPause.setVisibility(View.VISIBLE);
-                    MainActivity.ivPlay.setVisibility(View.INVISIBLE);
-                }
-            } else {
-                Toast.makeText(getContext(), "Message", Toast.LENGTH_SHORT).show();
-            }
-        }
-        super.onActivityResult(requestCode, resultCode, data);
     }
 
     public interface OnFragmentInteractionListener {

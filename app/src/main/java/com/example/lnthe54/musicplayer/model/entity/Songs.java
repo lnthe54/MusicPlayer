@@ -1,4 +1,4 @@
-package com.example.lnthe54.musicplayer.model;
+package com.example.lnthe54.musicplayer.model.entity;
 
 import android.os.Parcel;
 import android.os.Parcelable;

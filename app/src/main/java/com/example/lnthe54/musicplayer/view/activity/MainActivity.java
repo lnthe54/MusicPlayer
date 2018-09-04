@@ -1,4 +1,4 @@
-package com.example.lnthe54.musicplayer.activity;
+package com.example.lnthe54.musicplayer.view.activity;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
@@ -16,31 +16,30 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ImageView;
-import android.widget.TextView;
 
 import com.example.lnthe54.musicplayer.R;
 import com.example.lnthe54.musicplayer.adapter.PagerAdapter;
 import com.example.lnthe54.musicplayer.config.Config;
-import com.example.lnthe54.musicplayer.model.Songs;
-import com.example.lnthe54.musicplayer.tab.AlbumsTab;
-import com.example.lnthe54.musicplayer.tab.ArtistsTab;
-import com.example.lnthe54.musicplayer.tab.SongsTab;
+import com.example.lnthe54.musicplayer.model.entity.Songs;
+import com.example.lnthe54.musicplayer.view.fragment.AlbumsTab;
+import com.example.lnthe54.musicplayer.view.fragment.ArtistsTab;
+import com.example.lnthe54.musicplayer.view.fragment.SongsTab;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity
         implements SongsTab.OnFragmentInteractionListener,
+        AlbumsTab.OnFragmentInteractionListener,
         ArtistsTab.OnFragmentInteractionListener,
-        AlbumsTab.OnFragmentInteractionListener, View.OnClickListener, SearchView.OnQueryTextListener {
+        View.OnClickListener, SearchView.OnQueryTextListener {
 
     private TabLayout tabLayout;
     private ViewPager viewPager;
     private PagerAdapter pagerAdapter;
     private Toolbar toolbar;
-    public static ImageView ivPlay, ivPause;
-    public static TextView tvNameSongPlaying, tvAuthorSongPlaying;
+    //    public static ImageView ivPlay, ivPause;
+//    public static TextView tvNameSongPlaying, tvAuthorSongPlaying;
     private String[] permissions = {Manifest.permission.READ_EXTERNAL_STORAGE};
 
     @Override
@@ -48,7 +47,7 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        if (checkPermissions() == false) {
+        if (!checkPermissions()) {
             return;
         }
 
@@ -71,7 +70,7 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        if (checkPermissions() == true) {
+        if (checkPermissions()) {
             initViews();
         } else {
             finish();
@@ -112,30 +111,30 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
-        tvNameSongPlaying = findViewById(R.id.tv_name_song_playing);
-        tvAuthorSongPlaying = findViewById(R.id.tv_author_song_playing);
-
-        ivPlay = findViewById(R.id.iv_play);
-        ivPause = findViewById(R.id.iv_pause);
+//        tvNameSongPlaying = findViewById(R.id.tv_name_song_playing);
+//        tvAuthorSongPlaying = findViewById(R.id.tv_author_song_playing);
+//
+//        ivPlay = findViewById(R.id.iv_play);
+//        ivPause = findViewById(R.id.iv_pause);
     }
 
     public void addEvents() {
-        ivPlay.setOnClickListener(this);
-        ivPause.setOnClickListener(this);
+//        ivPlay.setOnClickListener(this);
+//        ivPause.setOnClickListener(this);
     }
 
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.iv_play: {
-                ivPlay.setVisibility(View.INVISIBLE);
-                ivPause.setVisibility(View.VISIBLE);
-                break;
+//                ivPlay.setVisibility(View.INVISIBLE);
+//                ivPause.setVisibility(View.VISIBLE);
+//                break;
             }
             case R.id.iv_pause: {
-                ivPlay.setVisibility(View.VISIBLE);
-                ivPause.setVisibility(View.INVISIBLE);
-                break;
+//                ivPlay.setVisibility(View.VISIBLE);
+//                ivPause.setVisibility(View.INVISIBLE);
+//                break;
             }
         }
     }
@@ -169,11 +168,6 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public void onFragmentInteraction(Uri uri) {
-
-    }
-
-    @Override
     public boolean onQueryTextSubmit(String query) {
         return false;
     }
@@ -191,5 +185,10 @@ public class MainActivity extends AppCompatActivity
 
         SongsTab.songAdapter.updateList(newList);
         return true;
+    }
+
+    @Override
+    public void onFragmentInteraction(Uri uri) {
+
     }
 }

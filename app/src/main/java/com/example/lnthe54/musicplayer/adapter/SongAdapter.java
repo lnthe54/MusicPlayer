@@ -8,7 +8,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.example.lnthe54.musicplayer.R;
-import com.example.lnthe54.musicplayer.model.Songs;
+import com.example.lnthe54.musicplayer.model.entity.Songs;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -5,9 +5,9 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 
-import com.example.lnthe54.musicplayer.tab.AlbumsTab;
-import com.example.lnthe54.musicplayer.tab.ArtistsTab;
-import com.example.lnthe54.musicplayer.tab.SongsTab;
+import com.example.lnthe54.musicplayer.view.fragment.AlbumsTab;
+import com.example.lnthe54.musicplayer.view.fragment.ArtistsTab;
+import com.example.lnthe54.musicplayer.view.fragment.SongsTab;
 
 public class PagerAdapter extends FragmentStatePagerAdapter {
 

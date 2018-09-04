@@ -1,4 +1,4 @@
-package com.example.lnthe54.musicplayer.tab;
+package com.example.lnthe54.musicplayer.view.fragment;
 
 import android.content.Context;
 import android.content.Intent;
@@ -12,19 +12,14 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.lnthe54.musicplayer.R;
-import com.example.lnthe54.musicplayer.activity.SongAccordingArtist;
 import com.example.lnthe54.musicplayer.adapter.ArtistsAdapter;
 import com.example.lnthe54.musicplayer.config.Config;
-import com.example.lnthe54.musicplayer.model.Artists;
+import com.example.lnthe54.musicplayer.model.entity.Artists;
+import com.example.lnthe54.musicplayer.view.activity.SongAccordingArtist;
 
 import java.util.ArrayList;
 
 public class ArtistsTab extends Fragment implements ArtistsAdapter.OnCallBack {
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    private String mParam1;
-    private String mParam2;
 
     public static RecyclerView rvArtist;
     private ArrayList<Artists> listArtist;
@@ -34,24 +29,6 @@ public class ArtistsTab extends Fragment implements ArtistsAdapter.OnCallBack {
 
     public ArtistsTab() {
     }
-
-//    public static ArtistsTab newInstance(String param1, String param2) {
-//        ArtistsTab fragment = new ArtistsTab();
-//        Bundle args = new Bundle();
-//        args.putString(ARG_PARAM1, param1);
-//        args.putString(ARG_PARAM2, param2);
-//        fragment.setArguments(args);
-//        return fragment;
-//    }
-//
-//    @Override
-//    public void onCreate(Bundle savedInstanceState) {
-//        super.onCreate(savedInstanceState);
-//        if (getArguments() != null) {
-//            mParam1 = getArguments().getString(ARG_PARAM1);
-//            mParam2 = getArguments().getString(ARG_PARAM2);
-//        }
-//    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {

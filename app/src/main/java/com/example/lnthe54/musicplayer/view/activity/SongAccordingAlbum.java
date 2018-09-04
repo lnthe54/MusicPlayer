@@ -1,4 +1,4 @@
-package com.example.lnthe54.musicplayer.activity;
+package com.example.lnthe54.musicplayer.view.activity;
 
 import android.content.ContentResolver;
 import android.content.Intent;
@@ -18,7 +18,7 @@ import android.widget.ImageView;
 import com.example.lnthe54.musicplayer.R;
 import com.example.lnthe54.musicplayer.adapter.SongAdapter;
 import com.example.lnthe54.musicplayer.config.Config;
-import com.example.lnthe54.musicplayer.model.Songs;
+import com.example.lnthe54.musicplayer.model.entity.Songs;
 
 import java.util.ArrayList;
 import java.util.Collections;

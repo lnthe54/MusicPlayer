@@ -1,4 +1,4 @@
-package com.example.lnthe54.musicplayer.model;
+package com.example.lnthe54.musicplayer.model.entity;
 
 /**
  * @author lnthe54 on 8/20/2018

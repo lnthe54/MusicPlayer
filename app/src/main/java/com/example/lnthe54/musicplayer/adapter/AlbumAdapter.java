@@ -9,7 +9,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.lnthe54.musicplayer.R;
-import com.example.lnthe54.musicplayer.model.Albums;
+import com.example.lnthe54.musicplayer.model.entity.Albums;
 
 import java.util.List;
 
