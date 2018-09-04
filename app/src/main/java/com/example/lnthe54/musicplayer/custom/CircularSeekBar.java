@@ -737,11 +737,8 @@ public class CircularSeekBar extends View {
     }
 
     public interface OnCircularSeekBarChangeListener {
-
         public abstract void onProgressChanged(CircularSeekBar circularSeekBar, int progress, boolean fromUser);
-
         public abstract void onStopTrackingTouch(CircularSeekBar seekBar);
-
         public abstract void onStartTrackingTouch(CircularSeekBar seekBar);
     }
 }
