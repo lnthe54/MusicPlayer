@@ -19,6 +19,7 @@ import com.example.lnthe54.musicplayer.R;
 import com.example.lnthe54.musicplayer.adapter.SongAdapter;
 import com.example.lnthe54.musicplayer.config.Config;
 import com.example.lnthe54.musicplayer.model.entity.Songs;
+import com.example.lnthe54.musicplayer.presenter.songaccordingartist.AccordingArtistPresenter;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -28,23 +29,27 @@ import java.util.Comparator;
  * @author lnthe54 on 8/27/2018
  * @project MusicPlayer
  */
-public class SongAccordingArtist extends AppCompatActivity implements SongAdapter.onCallBack {
+public class SongAccordingArtist extends AppCompatActivity implements SongAdapter.onCallBack, AccordingArtistPresenter.View {
     private Toolbar toolbar;
     private ImageView ivArtistBG, ivArtist;
     private RecyclerView rvList;
     private String nameSinger;
-    private int image;
     private SongAdapter songAdapter;
     private ArrayList<Songs> listSong;
+    private AccordingArtistPresenter artistPresenter;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_according_artist);
 
-        Intent intent = getIntent();
-        nameSinger = intent.getStringExtra(Config.NAME_SINGER);
+        artistPresenter = new AccordingArtistPresenter(this);
+        getData();
         initViews();
+    }
+
+    private void getData() {
+        artistPresenter.getDataFromArtistTab();
     }
 
     private void initViews() {
@@ -52,20 +57,17 @@ public class SongAccordingArtist extends AppCompatActivity implements SongAdapte
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         setTitle(nameSinger);
-
         rvList = findViewById(R.id.rv_list);
-        rvList.setLayoutManager(new LinearLayoutManager(SongAccordingArtist.this,
-                LinearLayoutManager.VERTICAL, false));
-        rvList.setHasFixedSize(true);
-
-        listSong = new ArrayList<>();
-
-        getMusic();
-
-        songAdapter = new SongAdapter(this, listSong);
-        rvList.setAdapter(songAdapter);
+        artistPresenter.showListSong();
     }
 
+    @Override
+    public void getDataIntent() {
+        Intent intent = getIntent();
+        nameSinger = intent.getStringExtra(Config.NAME_SINGER);
+    }
+
+    @Override
     public void getMusic() {
         ContentResolver contentResolver = getContentResolver();
         Uri song = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
@@ -94,6 +96,24 @@ public class SongAccordingArtist extends AppCompatActivity implements SongAdapte
     }
 
     @Override
+    public void showData() {
+        rvList.setLayoutManager(new LinearLayoutManager(SongAccordingArtist.this,
+                LinearLayoutManager.VERTICAL, false));
+        rvList.setHasFixedSize(true);
+        listSong = new ArrayList<>();
+        artistPresenter.getMusic();
+        songAdapter = new SongAdapter(this, listSong);
+        rvList.setAdapter(songAdapter);
+    }
+
+    @Override
+    public void backAlbumTab() {
+        Intent intent = new Intent();
+        setResult(RESULT_OK, intent);
+        finish();
+    }
+
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.action_bar_album, menu);
         return true;
@@ -104,9 +124,7 @@ public class SongAccordingArtist extends AppCompatActivity implements SongAdapte
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home: {
-                Intent intent = new Intent();
-                setResult(RESULT_OK, intent);
-                finish();
+                artistPresenter.backAlbumTab();
                 break;
             }
         }

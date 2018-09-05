@@ -15,7 +15,20 @@ public class ViewAlbumPresenter {
         viewSongByAlbum.showSongAccordingAlbum(position);
     }
 
+
+    public void addData() {
+        viewSongByAlbum.addData();
+    }
+
+    public void showListAlbum() {
+        viewSongByAlbum.showListAlbum();
+    }
+
     public interface ViewSongByAlbum {
         void showSongAccordingAlbum(int position);
+
+        void addData();
+
+        void showListAlbum();
     }
 }

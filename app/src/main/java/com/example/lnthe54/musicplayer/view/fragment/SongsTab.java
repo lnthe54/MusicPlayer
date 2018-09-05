@@ -16,11 +16,11 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.example.lnthe54.musicplayer.R;
-import com.example.lnthe54.musicplayer.presenter.playmusic.PlayMusicPresenter;
-import com.example.lnthe54.musicplayer.view.activity.PlayMusicActivity;
 import com.example.lnthe54.musicplayer.adapter.SongAdapter;
 import com.example.lnthe54.musicplayer.config.Config;
 import com.example.lnthe54.musicplayer.model.entity.Songs;
+import com.example.lnthe54.musicplayer.presenter.playmusic.PlayMusicPresenter;
+import com.example.lnthe54.musicplayer.view.activity.PlayMusicActivity;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -35,7 +35,7 @@ public class SongsTab extends Fragment implements SongAdapter.onCallBack, PlayMu
     public static Uri song;
     public static ArrayList<Songs> listSong;
 
-    private PlayMusicPresenter mainPresenter;
+    private PlayMusicPresenter playPresenter;
     private OnFragmentInteractionListener mListener;
 
     public SongsTab() {
@@ -45,23 +45,27 @@ public class SongsTab extends Fragment implements SongAdapter.onCallBack, PlayMu
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_songs, container, false);
-        mainPresenter = new PlayMusicPresenter(this);
+        playPresenter = new PlayMusicPresenter(this);
 
         rvListSong = view.findViewById(R.id.rv_songs);
+        playPresenter.showData();
+        return view;
+    }
+
+    @Override
+    public void showData() {
         rvListSong.setLayoutManager(new LinearLayoutManager(getContext(),
                 LinearLayoutManager.VERTICAL, false));
         rvListSong.setHasFixedSize(true);
 
         listSong = new ArrayList<>();
-        getMusic();
+        playPresenter.getMusic();
         songAdapter = new SongAdapter(this, listSong);
 
         rvListSong.setAdapter(songAdapter);
-
-        return view;
     }
 
-
+    @Override
     public void getMusic() {
         ContentResolver contentResolver = getContext().getContentResolver();
         song = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
@@ -113,7 +117,7 @@ public class SongsTab extends Fragment implements SongAdapter.onCallBack, PlayMu
 
     @Override
     public void onClickSong(int position) {
-        mainPresenter.showPlayMusicActivity(position);
+        playPresenter.showPlayMusicActivity(position);
     }
 
     @Override
@@ -152,6 +156,7 @@ public class SongsTab extends Fragment implements SongAdapter.onCallBack, PlayMu
         Bundle bundle = new Bundle();
         bundle.putParcelableArrayList(Config.LIST_SONG, listSong);
 
+        openPlayMusic.putExtras(bundle);
         startActivityForResult(openPlayMusic, Config.REQUEST_CODE);
     }
 

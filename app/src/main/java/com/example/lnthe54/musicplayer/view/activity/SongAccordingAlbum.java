@@ -19,6 +19,7 @@ import com.example.lnthe54.musicplayer.R;
 import com.example.lnthe54.musicplayer.adapter.SongAdapter;
 import com.example.lnthe54.musicplayer.config.Config;
 import com.example.lnthe54.musicplayer.model.entity.Songs;
+import com.example.lnthe54.musicplayer.presenter.songaccordingalbum.AccordingAlbumPresenter;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -28,7 +29,8 @@ import java.util.Comparator;
  * @author lnthe54 on 8/22/2018
  * @project MusicPlayer
  */
-public class SongAccordingAlbum extends AppCompatActivity implements SongAdapter.onCallBack {
+public class SongAccordingAlbum extends AppCompatActivity
+        implements SongAdapter.onCallBack, AccordingAlbumPresenter.View {
 
     private Toolbar toolbar;
     private ImageView ivAlbumBG, ivAlbum;
@@ -37,16 +39,21 @@ public class SongAccordingAlbum extends AppCompatActivity implements SongAdapter
     private int image;
     private SongAdapter songAdapter;
     private ArrayList<Songs> listSong;
+    private AccordingAlbumPresenter albumPresenter;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_according_album);
 
-        Intent intent = getIntent();
-        nameSinger = intent.getStringExtra(Config.NAME_SINGER);
-        image = intent.getIntExtra(Config.IMAGE, 0);
+        albumPresenter = new AccordingAlbumPresenter(this);
+
+        getData();
         initViews();
+    }
+
+    private void getData() {
+        albumPresenter.getDataFromAlbumTab();
     }
 
     private void initViews() {
@@ -62,17 +69,40 @@ public class SongAccordingAlbum extends AppCompatActivity implements SongAdapter
         ivAlbum.setImageResource(image);
 
         rvList = findViewById(R.id.rv_list);
-        rvList.setLayoutManager(new LinearLayoutManager(SongAccordingAlbum.this, LinearLayoutManager.VERTICAL, false));
-        rvList.setHasFixedSize(true);
 
-        listSong = new ArrayList<>();
-
-        getMusic();
-
-        songAdapter = new SongAdapter(this, listSong);
-        rvList.setAdapter(songAdapter);
+        albumPresenter.showListSong();
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.action_bar_album, menu);
+        return true;
+    }
+
+    @Override
+    public void onClickSong(int position) {
+
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home: {
+                albumPresenter.backAlbumTab();
+                break;
+            }
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void getDataIntent() {
+        Intent intent = getIntent();
+        nameSinger = intent.getStringExtra(Config.NAME_SINGER);
+        image = intent.getIntExtra(Config.IMAGE, 0);
+    }
+
+    @Override
     public void getMusic() {
         ContentResolver contentResolver = getContentResolver();
         Uri song = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
@@ -101,26 +131,19 @@ public class SongAccordingAlbum extends AppCompatActivity implements SongAdapter
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.action_bar_album, menu);
-        return true;
+    public void showData() {
+        rvList.setLayoutManager(new LinearLayoutManager(SongAccordingAlbum.this, LinearLayoutManager.VERTICAL, false));
+        rvList.setHasFixedSize(true);
+        listSong = new ArrayList<>();
+        albumPresenter.getMusic();
+        songAdapter = new SongAdapter(this, listSong);
+        rvList.setAdapter(songAdapter);
     }
 
     @Override
-    public void onClickSong(int position) {
-
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home: {
-                Intent intent = new Intent();
-                setResult(RESULT_OK, intent);
-                finish();
-                break;
-            }
-        }
-        return super.onOptionsItemSelected(item);
+    public void backAlbumTab() {
+        Intent intent = new Intent();
+        setResult(RESULT_OK, intent);
+        finish();
     }
 }

@@ -11,11 +11,23 @@ public class PlayMusicPresenter {
         this.viewPlay = viewPlay;
     }
 
+    public void showData() {
+        viewPlay.showData();
+    }
+
+    public void getMusic() {
+        viewPlay.getMusic();
+    }
+
     public void showPlayMusicActivity(int position) {
         viewPlay.showPlayMusicActivity(position);
     }
 
     public interface PlayMusicActivity {
+        void showData();
+
+        void getMusic();
+
         void showPlayMusicActivity(int position);
     }
 }

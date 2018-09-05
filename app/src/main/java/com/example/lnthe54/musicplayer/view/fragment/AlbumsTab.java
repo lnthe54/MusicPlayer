@@ -37,21 +37,11 @@ public class AlbumsTab extends Fragment implements AlbumAdapter.onCallBack, View
         View view = inflater.inflate(R.layout.fragment_albums, container, false);
 
         viewAlbumPresenter = new ViewAlbumPresenter(this);
+
         rvListAlbum = view.findViewById(R.id.rv_albums);
-        rvListAlbum.setLayoutManager(new GridLayoutManager(getContext(), Config.NUM_COLUMN));
-        rvListAlbum.setHasFixedSize(true);
+        viewAlbumPresenter.addData();
+        viewAlbumPresenter.showListAlbum();
 
-        listAlbum = new ArrayList<>();
-
-        listAlbum.add(new Albums(R.drawable.album1, "Di Theo Bong Mat Troi", "Den, Giang Nguyen"));
-        listAlbum.add(new Albums(R.drawable.album2, "Dung Quen Ten Anh", "Hoa Vinh"));
-        listAlbum.add(new Albums(R.drawable.album3, "Ghe Qua", "Dick, ToFu"));
-        listAlbum.add(new Albums(R.drawable.album1, "Co Gai Ban Ben", "Den"));
-        listAlbum.add(new Albums(R.drawable.album5, "Benh Cua Anh", "Khoi"));
-
-        albumAdapter = new AlbumAdapter(this, listAlbum);
-
-        rvListAlbum.setAdapter(albumAdapter);
         return view;
     }
 
@@ -82,6 +72,26 @@ public class AlbumsTab extends Fragment implements AlbumAdapter.onCallBack, View
     @Override
     public void onClickAlbum(int position) {
         viewAlbumPresenter.showSongAccordingAlbum(position);
+    }
+
+    @Override
+    public void addData() {
+        listAlbum = new ArrayList<>();
+
+        listAlbum.add(new Albums(R.drawable.album1, "Di Theo Bong Mat Troi", "Den, Giang Nguyen"));
+        listAlbum.add(new Albums(R.drawable.album2, "Dung Quen Ten Anh", "Hoa Vinh"));
+        listAlbum.add(new Albums(R.drawable.album3, "Ghe Qua", "Dick, ToFu"));
+        listAlbum.add(new Albums(R.drawable.album1, "Co Gai Ban Ben", "Den"));
+        listAlbum.add(new Albums(R.drawable.album5, "Benh Cua Anh", "Khoi"));
+
+        albumAdapter = new AlbumAdapter(this, listAlbum);
+    }
+
+    @Override
+    public void showListAlbum() {
+        rvListAlbum.setLayoutManager(new GridLayoutManager(getContext(), Config.NUM_COLUMN));
+        rvListAlbum.setHasFixedSize(true);
+        rvListAlbum.setAdapter(albumAdapter);
     }
 
     @Override

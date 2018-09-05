@@ -1,4 +1,4 @@
-package com.example.lnthe54.musicplayer.custom;
+package com.example.lnthe54.musicplayer.view.custom;
 
 import android.content.Context;
 import android.content.res.TypedArray;
