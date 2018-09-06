@@ -83,7 +83,7 @@ public class SongAccordingArtist extends AppCompatActivity implements SongAdapte
                 String currentTitle = songCursor.getString(songTitle);
                 String currentArtists = songCursor.getString(songArtists);
 
-                listSong.add(new Songs(currentId, currentTitle, currentArtists));
+//                listSong.add(new Songs(currentId, currentTitle, currentArtists));
 
                 Collections.sort(listSong, new Comparator<Songs>() {
                     @Override

@@ -1,9 +1,7 @@
 package com.example.lnthe54.musicplayer.view.activity;
 
-import android.content.ContentResolver;
 import android.content.Intent;
 import android.database.Cursor;
-import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
@@ -15,6 +13,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ImageView;
 
+import com.bumptech.glide.Glide;
 import com.example.lnthe54.musicplayer.R;
 import com.example.lnthe54.musicplayer.adapter.SongAdapter;
 import com.example.lnthe54.musicplayer.config.Config;
@@ -22,8 +21,6 @@ import com.example.lnthe54.musicplayer.model.entity.Songs;
 import com.example.lnthe54.musicplayer.presenter.songaccordingalbum.AccordingAlbumPresenter;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 
 /**
  * @author lnthe54 on 8/22/2018
@@ -35,10 +32,11 @@ public class SongAccordingAlbum extends AppCompatActivity
     private Toolbar toolbar;
     private ImageView ivAlbumBG, ivAlbum;
     private RecyclerView rvList;
+    private int albumID;
     private String nameSinger;
-    private int image;
+    private String pathImage;
     private SongAdapter songAdapter;
-    private ArrayList<Songs> listSong;
+    private ArrayList<Songs> listSong = new ArrayList<>();
     private AccordingAlbumPresenter albumPresenter;
 
     @Override
@@ -63,14 +61,16 @@ public class SongAccordingAlbum extends AppCompatActivity
         setTitle(nameSinger);
 
         ivAlbumBG = findViewById(R.id.iv_album_bg);
-        ivAlbumBG.setImageResource(image);
+        Glide.with(this).load(pathImage).into(ivAlbumBG);
+
 
         ivAlbum = findViewById(R.id.iv_album);
-        ivAlbum.setImageResource(image);
+        Glide.with(this).load(pathImage).into(ivAlbum);
 
         rvList = findViewById(R.id.rv_list);
 
         albumPresenter.showListSong();
+        albumPresenter.showListSongOfAlbum(albumID);
     }
 
     @Override
@@ -98,46 +98,60 @@ public class SongAccordingAlbum extends AppCompatActivity
     @Override
     public void getDataIntent() {
         Intent intent = getIntent();
+        albumID = intent.getIntExtra(Config.ID_ALBUM, 0);
         nameSinger = intent.getStringExtra(Config.NAME_SINGER);
-        image = intent.getIntExtra(Config.IMAGE, 0);
-    }
-
-    @Override
-    public void getMusic() {
-        ContentResolver contentResolver = getContentResolver();
-        Uri song = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
-        Cursor songCursor = contentResolver.query(song, null, null, null, null, null);
-
-        if (song != null && songCursor.moveToFirst()) {
-            int songID = songCursor.getColumnIndex(MediaStore.Audio.Media._ID);
-            int songTitle = songCursor.getColumnIndex(MediaStore.Audio.Media.TITLE);
-            int songArtists = songCursor.getColumnIndex(MediaStore.Audio.Media.ARTIST);
-
-            do {
-                long currentID = songCursor.getLong(songID);
-                String currentTitle = songCursor.getString(songTitle);
-                String currentArtists = songCursor.getString(songArtists);
-
-                listSong.add(new Songs(currentID, currentTitle, currentArtists));
-
-                Collections.sort(listSong, new Comparator<Songs>() {
-                    @Override
-                    public int compare(Songs lhs, Songs rhs) {
-                        return lhs.getNameSong().compareTo(rhs.getNameSong());
-                    }
-                });
-            } while (songCursor.moveToNext());
-        }
+        pathImage = intent.getStringExtra(Config.IMAGE);
     }
 
     @Override
     public void showData() {
         rvList.setLayoutManager(new LinearLayoutManager(SongAccordingAlbum.this, LinearLayoutManager.VERTICAL, false));
         rvList.setHasFixedSize(true);
-        listSong = new ArrayList<>();
-        albumPresenter.getMusic();
         songAdapter = new SongAdapter(this, listSong);
         rvList.setAdapter(songAdapter);
+    }
+
+    @Override
+    public void showListSongOfAlbum(int albumId) {
+        Cursor cursor = getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
+                new String[]{MediaStore.Audio.Media.TITLE, MediaStore.Audio.Media.ALBUM, MediaStore.Audio.Media.ARTIST, MediaStore.Audio.Media._ID,
+                        MediaStore.Audio.Media.DURATION, MediaStore.Audio.Media.DATA, MediaStore.Audio.Media.ALBUM_ID},
+                MediaStore.Audio.Media.ALBUM_ID + "=?",
+                new String[]{String.valueOf(albumId)}, MediaStore.Audio.Media.TITLE + " ASC");
+
+        if (cursor != null && cursor.moveToFirst()) {
+            do {
+                String title = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.TITLE));
+                String album = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM));
+                String artist = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ARTIST));
+                long songId = cursor.getLong(cursor.getColumnIndex(MediaStore.Audio.Media._ID));
+                int duration = cursor.getInt(cursor.getColumnIndex(MediaStore.Audio.Media.DURATION));
+                String path = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.DATA));
+                int albumID = cursor.getInt(cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM_ID));
+                String albumPath = albumPresenter.getConverArtPath(albumID);
+                Songs song = new Songs(songId, title, artist, album, albumPath, duration, path);
+                listSong.add(song);
+
+            } while (cursor.moveToNext());
+        }
+    }
+
+    @Override
+    public String getCoverArtPath(int albumID) {
+        Cursor albumCursor = getContentResolver().query(
+                MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI,
+                new String[]{MediaStore.Audio.Albums.ALBUM_ART},
+                MediaStore.Audio.Albums._ID + " = ?",
+                new String[]{Long.toString(albumID)},
+                null
+        );
+        boolean queryResult = albumCursor.moveToFirst();
+        String result = null;
+        if (queryResult) {
+            result = albumCursor.getString(0);
+        }
+        albumCursor.close();
+        return result;
     }
 
     @Override

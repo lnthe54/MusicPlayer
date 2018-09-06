@@ -16,5 +16,5 @@ public class Config {
     public static final String ID_SONG = "id song";
     public static final String IMAGE = "image";
     public static final String LIST_SONG = "list song";
-
+    public static final String ID_ALBUM = "id album";
 }

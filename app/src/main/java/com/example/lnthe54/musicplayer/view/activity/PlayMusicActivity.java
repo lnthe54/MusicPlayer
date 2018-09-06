@@ -52,7 +52,6 @@ public class PlayMusicActivity extends AppCompatActivity
 
         getSongTabIntent();
         initViews();
-        addEvents();
         activityPresenter.setPlayMusic();
     }
 
@@ -72,9 +71,6 @@ public class PlayMusicActivity extends AppCompatActivity
 
         rvSong = findViewById(R.id.rv_song);
         activityPresenter.showListSong();
-    }
-
-    public void addEvents() {
     }
 
     @Override

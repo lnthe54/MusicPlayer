@@ -1,9 +1,11 @@
 package com.example.lnthe54.musicplayer.view.fragment;
 
-import android.content.Context;
+import android.content.ContentResolver;
 import android.content.Intent;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -23,9 +25,8 @@ import java.util.ArrayList;
 public class AlbumsTab extends Fragment implements AlbumAdapter.onCallBack, ViewAlbumPresenter.ViewSongByAlbum {
 
     public static RecyclerView rvListAlbum;
-    private ArrayList<Albums> listAlbum;
+    private ArrayList<Albums> listAlbum = new ArrayList<>();
     private AlbumAdapter albumAdapter;
-    private OnFragmentInteractionListener mListener;
     private ViewAlbumPresenter viewAlbumPresenter;
 
     public AlbumsTab() {
@@ -39,35 +40,11 @@ public class AlbumsTab extends Fragment implements AlbumAdapter.onCallBack, View
         viewAlbumPresenter = new ViewAlbumPresenter(this);
 
         rvListAlbum = view.findViewById(R.id.rv_albums);
-        viewAlbumPresenter.addData();
         viewAlbumPresenter.showListAlbum();
 
         return view;
     }
 
-
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
-        }
-    }
-
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        if (context instanceof OnFragmentInteractionListener) {
-            mListener = (OnFragmentInteractionListener) context;
-        } else {
-            throw new RuntimeException(context.toString()
-                    + " must implement OnFragmentInteractionListener");
-        }
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        mListener = null;
-    }
 
     @Override
     public void onClickAlbum(int position) {
@@ -76,37 +53,45 @@ public class AlbumsTab extends Fragment implements AlbumAdapter.onCallBack, View
 
     @Override
     public void addData() {
-        listAlbum = new ArrayList<>();
+        ContentResolver contentResolver = getContext().getContentResolver();
+        Uri album = MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI;
+        Cursor cursor = contentResolver.query(album,
+                new String[]{MediaStore.Audio.Albums.ALBUM, MediaStore.Audio.Albums.ALBUM_ART,
+                        MediaStore.Audio.Albums._ID, MediaStore.Audio.Albums.ARTIST},
+                null, null, MediaStore.Audio.Albums.ALBUM + " ASC");
 
-        listAlbum.add(new Albums(R.drawable.album1, "Di Theo Bong Mat Troi", "Den, Giang Nguyen"));
-        listAlbum.add(new Albums(R.drawable.album2, "Dung Quen Ten Anh", "Hoa Vinh"));
-        listAlbum.add(new Albums(R.drawable.album3, "Ghe Qua", "Dick, ToFu"));
-        listAlbum.add(new Albums(R.drawable.album1, "Co Gai Ban Ben", "Den"));
-        listAlbum.add(new Albums(R.drawable.album5, "Benh Cua Anh", "Khoi"));
+        if (cursor != null && cursor.moveToFirst()) {
+            do {
+                String title = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Albums.ALBUM));
+                String pathArt = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Albums.ALBUM_ART));
+                int id = cursor.getInt(cursor.getColumnIndex(MediaStore.Audio.Albums._ID));
+                String artist = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Albums.ARTIST));
 
-        albumAdapter = new AlbumAdapter(this, listAlbum);
+                Albums albums = new Albums(id, title, artist, pathArt);
+                listAlbum.add(albums);
+            } while (cursor.moveToNext());
+        }
     }
 
     @Override
     public void showListAlbum() {
         rvListAlbum.setLayoutManager(new GridLayoutManager(getContext(), Config.NUM_COLUMN));
         rvListAlbum.setHasFixedSize(true);
+        viewAlbumPresenter.addData();
+        albumAdapter = new AlbumAdapter(getContext(), this, listAlbum);
         rvListAlbum.setAdapter(albumAdapter);
     }
 
     @Override
     public void showSongAccordingAlbum(int position) {
         Intent openAlbum = new Intent(getContext(), SongAccordingAlbum.class);
-
+        int idAlbum = listAlbum.get(position).getId();
         String nameSinger = listAlbum.get(position).getAuthor();
-        int image = listAlbum.get(position).getImage();
+        String path = listAlbum.get(position).getPathArtAlbum();
 
+        openAlbum.putExtra(Config.ID_ALBUM, idAlbum);
         openAlbum.putExtra(Config.NAME_SINGER, nameSinger);
-        openAlbum.putExtra(Config.IMAGE, image);
+        openAlbum.putExtra(Config.IMAGE, path);
         startActivityForResult(openAlbum, Config.REQUEST_CODE);
-    }
-
-    public interface OnFragmentInteractionListener {
-        void onFragmentInteraction(Uri uri);
     }
 }

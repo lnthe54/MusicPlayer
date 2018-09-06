@@ -1,5 +1,6 @@
 package com.example.lnthe54.musicplayer.adapter;
 
+import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -8,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.example.lnthe54.musicplayer.R;
 import com.example.lnthe54.musicplayer.model.entity.Albums;
 
@@ -20,8 +22,10 @@ import java.util.List;
 public class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.ViewHolder> {
     private List<Albums> listAlbums;
     private onCallBack clickAlbum;
+    private Context context;
 
-    public AlbumAdapter(onCallBack clickAlbum, List<Albums> listAlbums) {
+    public AlbumAdapter(Context context, onCallBack clickAlbum, List<Albums> listAlbums) {
+        this.context = context;
         this.clickAlbum = clickAlbum;
         this.listAlbums = listAlbums;
     }
@@ -36,9 +40,12 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.ViewHolder> 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Albums albums = listAlbums.get(position);
+        String path = listAlbums.get(position).getPathArtAlbum();
+        if (path != null) {
+            Glide.with(context).load(path).into(holder.ivAlbum);
+        }
         holder.tvNameAlbum.setText(albums.getNameAlbum());
         holder.tvAuthor.setText(albums.getAuthor());
-        holder.ivAlbum.setImageResource(albums.getImage());
 
     }
 

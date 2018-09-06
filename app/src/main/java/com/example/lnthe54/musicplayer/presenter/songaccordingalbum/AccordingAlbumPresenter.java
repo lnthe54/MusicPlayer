@@ -16,10 +16,6 @@ public class AccordingAlbumPresenter {
         view.getDataIntent();
     }
 
-    public void getMusic() {
-        view.getMusic();
-    }
-
     public void showListSong() {
         view.showData();
     }
@@ -28,13 +24,24 @@ public class AccordingAlbumPresenter {
         view.backAlbumTab();
     }
 
+    public void showListSongOfAlbum(int albumID) {
+        view.showListSongOfAlbum(albumID);
+    }
+
+    public String getConverArtPath(int albumID) {
+        view.getCoverArtPath(albumID);
+        return null;
+    }
+
     public interface View {
         void getDataIntent();
-
-        void getMusic();
 
         void showData();
 
         void backAlbumTab();
+
+        void showListSongOfAlbum(int albumID);
+
+        String getCoverArtPath(int albumID);
     }
 }

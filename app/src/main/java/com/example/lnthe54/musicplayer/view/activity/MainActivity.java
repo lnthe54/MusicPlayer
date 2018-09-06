@@ -2,7 +2,6 @@ package com.example.lnthe54.musicplayer.view.activity;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -21,6 +20,7 @@ import com.example.lnthe54.musicplayer.R;
 import com.example.lnthe54.musicplayer.adapter.PagerAdapter;
 import com.example.lnthe54.musicplayer.config.Config;
 import com.example.lnthe54.musicplayer.model.entity.Songs;
+import com.example.lnthe54.musicplayer.presenter.mainpresenter.MainPresenter;
 import com.example.lnthe54.musicplayer.view.fragment.AlbumsTab;
 import com.example.lnthe54.musicplayer.view.fragment.ArtistsTab;
 import com.example.lnthe54.musicplayer.view.fragment.SongsTab;
@@ -29,10 +29,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity
-        implements SongsTab.OnFragmentInteractionListener,
-        AlbumsTab.OnFragmentInteractionListener,
-        ArtistsTab.OnFragmentInteractionListener,
-        View.OnClickListener, SearchView.OnQueryTextListener {
+        implements View.OnClickListener, SearchView.OnQueryTextListener, MainPresenter.ViewMain {
 
     private TabLayout tabLayout;
     private ViewPager viewPager;
@@ -41,6 +38,8 @@ public class MainActivity extends AppCompatActivity
     //    public static ImageView ivPlay, ivPause;
 //    public static TextView tvNameSongPlaying, tvAuthorSongPlaying;
     private String[] permissions = {Manifest.permission.READ_EXTERNAL_STORAGE};
+
+    private MainPresenter mainPresenter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,6 +50,7 @@ public class MainActivity extends AppCompatActivity
             return;
         }
 
+        mainPresenter = new MainPresenter(this);
         initViews();
         addEvents();
     }
@@ -84,32 +84,9 @@ public class MainActivity extends AppCompatActivity
         setSupportActionBar(toolbar);
 
         tabLayout = findViewById(R.id.tab_layout);
-        tabLayout.addTab(tabLayout.newTab().setText(Config.SONGS));
-        tabLayout.addTab(tabLayout.newTab().setText(Config.ALBUMS));
-        tabLayout.addTab(tabLayout.newTab().setText(Config.ARTISTS));
-        tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
-
+        mainPresenter.addTabLayout();
         viewPager = findViewById(R.id.pager);
-        pagerAdapter = new PagerAdapter(getSupportFragmentManager(), tabLayout.getTabCount());
-        viewPager.setAdapter(pagerAdapter);
-        viewPager.setOffscreenPageLimit(pagerAdapter.getCount());
-        viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
-        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
-            @Override
-            public void onTabSelected(TabLayout.Tab tab) {
-                viewPager.setCurrentItem(tab.getPosition());
-            }
-
-            @Override
-            public void onTabUnselected(TabLayout.Tab tab) {
-
-            }
-
-            @Override
-            public void onTabReselected(TabLayout.Tab tab) {
-
-            }
-        });
+        mainPresenter.addViewPager();
 
 //        tvNameSongPlaying = findViewById(R.id.tv_name_song_playing);
 //        tvAuthorSongPlaying = findViewById(R.id.tv_author_song_playing);
@@ -152,15 +129,12 @@ public class MainActivity extends AppCompatActivity
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.icon_list_view: {
-                SongsTab.rvListSong.setLayoutManager(new LinearLayoutManager(MainActivity.this, LinearLayoutManager.VERTICAL, false));
-                AlbumsTab.rvListAlbum.setLayoutManager(new LinearLayoutManager(MainActivity.this, LinearLayoutManager.VERTICAL, false));
-                ArtistsTab.rvArtist.setLayoutManager(new LinearLayoutManager(MainActivity.this, LinearLayoutManager.VERTICAL, false));
+                mainPresenter.addListView();
+
                 break;
             }
             case R.id.icon_grid_view: {
-                SongsTab.rvListSong.setLayoutManager(new GridLayoutManager(this, Config.NUM_COLUMN));
-                AlbumsTab.rvListAlbum.setLayoutManager(new GridLayoutManager(this, Config.NUM_COLUMN));
-                ArtistsTab.rvArtist.setLayoutManager(new GridLayoutManager(this, Config.NUM_COLUMN));
+                mainPresenter.addGridView();
                 break;
             }
         }
@@ -188,7 +162,48 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public void onFragmentInteraction(Uri uri) {
+    public void addTabLayout() {
+        tabLayout.addTab(tabLayout.newTab().setText(Config.SONGS));
+        tabLayout.addTab(tabLayout.newTab().setText(Config.ALBUMS));
+        tabLayout.addTab(tabLayout.newTab().setText(Config.ARTISTS));
+        tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
+    }
 
+    @Override
+    public void addViewPager() {
+        pagerAdapter = new PagerAdapter(getSupportFragmentManager(), tabLayout.getTabCount());
+        viewPager.setAdapter(pagerAdapter);
+        viewPager.setOffscreenPageLimit(pagerAdapter.getCount());
+        viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
+        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                viewPager.setCurrentItem(tab.getPosition());
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+
+            }
+        });
+    }
+
+    @Override
+    public void addListView() {
+        SongsTab.rvListSong.setLayoutManager(new LinearLayoutManager(MainActivity.this, LinearLayoutManager.VERTICAL, false));
+        AlbumsTab.rvListAlbum.setLayoutManager(new LinearLayoutManager(MainActivity.this, LinearLayoutManager.VERTICAL, false));
+        ArtistsTab.rvArtist.setLayoutManager(new LinearLayoutManager(MainActivity.this, LinearLayoutManager.VERTICAL, false));
+    }
+
+    @Override
+    public void addGridView() {
+        SongsTab.rvListSong.setLayoutManager(new GridLayoutManager(this, Config.NUM_COLUMN));
+        AlbumsTab.rvListAlbum.setLayoutManager(new GridLayoutManager(this, Config.NUM_COLUMN));
+        ArtistsTab.rvArtist.setLayoutManager(new GridLayoutManager(this, Config.NUM_COLUMN));
     }
 }

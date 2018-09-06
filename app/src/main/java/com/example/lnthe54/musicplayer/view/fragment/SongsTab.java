@@ -1,7 +1,6 @@
 package com.example.lnthe54.musicplayer.view.fragment;
 
 import android.content.ContentResolver;
-import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
@@ -36,7 +35,6 @@ public class SongsTab extends Fragment implements SongAdapter.onCallBack, PlayMu
     public static ArrayList<Songs> listSong;
 
     private PlayMusicPresenter playPresenter;
-    private OnFragmentInteractionListener mListener;
 
     public SongsTab() {
 
@@ -69,19 +67,31 @@ public class SongsTab extends Fragment implements SongAdapter.onCallBack, PlayMu
     public void getMusic() {
         ContentResolver contentResolver = getContext().getContentResolver();
         song = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
-        Cursor songCursor = contentResolver.query(song, null, null, null, null, null);
+        Cursor songCursor = contentResolver.query(song,
+                new String[]{MediaStore.Audio.Media._ID, MediaStore.Audio.Media.TITLE,
+                        MediaStore.Audio.Media.ALBUM, MediaStore.Audio.Media.ARTIST,
+                        MediaStore.Audio.Media.DURATION, MediaStore.Audio.Media.DATA, MediaStore.Audio.Media.ALBUM_ID},
+                null, null, MediaStore.Audio.Media.TITLE);
 
         if (song != null && songCursor.moveToFirst()) {
             int idColumn = songCursor.getColumnIndex(MediaStore.Audio.Media._ID);
             int songTitle = songCursor.getColumnIndex(MediaStore.Audio.Media.TITLE);
             int songArtists = songCursor.getColumnIndex(MediaStore.Audio.Media.ARTIST);
+            int album = songCursor.getColumnIndex(MediaStore.Audio.Media.ALBUM);
+            int duration = songCursor.getColumnIndex(MediaStore.Audio.Media.DURATION);
+            int albumID = songCursor.getColumnIndex(MediaStore.Audio.Media.ALBUM_ID);
+            int path = songCursor.getColumnIndex(MediaStore.Audio.Media.DATA);
 
             do {
                 long currentId = songCursor.getLong(idColumn);
                 String currentTitle = songCursor.getString(songTitle);
                 String currentArtists = songCursor.getString(songArtists);
+                String currentAlbum = songCursor.getString(album);
+                int currentDuration = songCursor.getInt(duration);
+                String albumPath = songCursor.getString(path);
+                String albumArt = playPresenter.getCoverArtPath(albumID);
 
-                listSong.add(new Songs(currentId, currentTitle, currentArtists));
+                listSong.add(new Songs(currentId, currentTitle, currentArtists, currentAlbum, albumArt, currentDuration, albumPath));
 
                 Collections.sort(listSong, new Comparator<Songs>() {
                     @Override
@@ -93,26 +103,22 @@ public class SongsTab extends Fragment implements SongAdapter.onCallBack, PlayMu
         }
     }
 
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
-        }
-    }
-
     @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        if (context instanceof OnFragmentInteractionListener) {
-            mListener = (OnFragmentInteractionListener) context;
-        } else {
-            throw new RuntimeException(context.toString() + " must implement OnFragmentInteractionListener");
+    public String getCoverArtPath(long albumId) {
+        Cursor albumCursor = getContext().getContentResolver().query(
+                MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI,
+                new String[]{MediaStore.Audio.Albums.ALBUM_ART},
+                MediaStore.Audio.Albums._ID + " = ?",
+                new String[]{Long.toString(albumId)},
+                null
+        );
+        boolean queryResult = albumCursor.moveToFirst();
+        String result = null;
+        if (queryResult) {
+            result = albumCursor.getString(0);
         }
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        mListener = null;
+        albumCursor.close();
+        return result;
     }
 
     @Override
@@ -158,9 +164,5 @@ public class SongsTab extends Fragment implements SongAdapter.onCallBack, PlayMu
 
         openPlayMusic.putExtras(bundle);
         startActivityForResult(openPlayMusic, Config.REQUEST_CODE);
-    }
-
-    public interface OnFragmentInteractionListener {
-        void onFragmentInteraction(Uri uri);
     }
 }

@@ -1,8 +1,6 @@
 package com.example.lnthe54.musicplayer.view.fragment;
 
-import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
@@ -15,7 +13,6 @@ import com.example.lnthe54.musicplayer.R;
 import com.example.lnthe54.musicplayer.adapter.ArtistsAdapter;
 import com.example.lnthe54.musicplayer.config.Config;
 import com.example.lnthe54.musicplayer.model.entity.Artists;
-import com.example.lnthe54.musicplayer.presenter.songaccordingalbum.ViewAlbumPresenter;
 import com.example.lnthe54.musicplayer.presenter.songaccordingartist.ViewArtistPresenter;
 import com.example.lnthe54.musicplayer.view.activity.SongAccordingArtist;
 
@@ -28,8 +25,6 @@ public class ArtistsTab extends Fragment implements ArtistsAdapter.OnCallBack, V
     private ArtistsAdapter artistsAdapter;
     private ViewArtistPresenter artistPresenter;
 
-    private OnFragmentInteractionListener mListener;
-
     public ArtistsTab() {
     }
 
@@ -41,29 +36,6 @@ public class ArtistsTab extends Fragment implements ArtistsAdapter.OnCallBack, V
         rvArtist = view.findViewById(R.id.rv_artists);
         artistPresenter.getData();
         return view;
-    }
-
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
-        }
-    }
-
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        if (context instanceof OnFragmentInteractionListener) {
-            mListener = (OnFragmentInteractionListener) context;
-        } else {
-            throw new RuntimeException(context.toString()
-                    + " must implement OnFragmentInteractionListener");
-        }
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        mListener = null;
     }
 
     @Override
@@ -95,8 +67,5 @@ public class ArtistsTab extends Fragment implements ArtistsAdapter.OnCallBack, V
         startActivityForResult(openArtist, Config.REQUEST_CODE);
     }
 
-    public interface OnFragmentInteractionListener {
-        void onFragmentInteraction(Uri uri);
-    }
 }
 

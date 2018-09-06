@@ -11,11 +11,28 @@ public class Songs implements Parcelable {
     private long id;
     private String nameSong;
     private String author;
+    private String album;
+    private String albumImagePath;
+    private int duration;
+    private String path;
 
-    public Songs(long id, String nameSong, String author) {
+    public Songs(long id, String nameSong, String author, String album, int duration, String path) {
         this.id = id;
         this.nameSong = nameSong;
         this.author = author;
+        this.album = album;
+        this.duration = duration;
+        this.path = path;
+    }
+
+    public Songs(long id, String nameSong, String author, String album, String albumImagePath, int duration, String path) {
+        this.id = id;
+        this.nameSong = nameSong;
+        this.author = author;
+        this.album = album;
+        this.albumImagePath = albumImagePath;
+        this.duration = duration;
+        this.path = path;
     }
 
     public long getId() {

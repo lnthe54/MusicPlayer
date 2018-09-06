@@ -23,11 +23,18 @@ public class PlayMusicPresenter {
         viewPlay.showPlayMusicActivity(position);
     }
 
+    public String getCoverArtPath(long albumID) {
+        viewPlay.getCoverArtPath(albumID);
+        return null;
+    }
+
     public interface PlayMusicActivity {
         void showData();
 
         void getMusic();
 
         void showPlayMusicActivity(int position);
+
+        String getCoverArtPath(long albumID);
     }
 }
