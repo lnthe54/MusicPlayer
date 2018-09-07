@@ -2,6 +2,7 @@ package com.example.lnthe54.musicplayer.view.activity;
 
 import android.content.Intent;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
@@ -17,7 +18,7 @@ import com.bumptech.glide.Glide;
 import com.example.lnthe54.musicplayer.R;
 import com.example.lnthe54.musicplayer.adapter.SongAdapter;
 import com.example.lnthe54.musicplayer.config.Config;
-import com.example.lnthe54.musicplayer.model.entity.Songs;
+import com.example.lnthe54.musicplayer.model.Songs;
 import com.example.lnthe54.musicplayer.presenter.songaccordingalbum.AccordingAlbumPresenter;
 
 import java.util.ArrayList;
@@ -113,7 +114,8 @@ public class SongAccordingAlbum extends AppCompatActivity
 
     @Override
     public void showListSongOfAlbum(int albumId) {
-        Cursor cursor = getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
+        Uri albumUri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
+        Cursor cursor = getContentResolver().query(albumUri,
                 new String[]{MediaStore.Audio.Media.TITLE, MediaStore.Audio.Media.ALBUM, MediaStore.Audio.Media.ARTIST, MediaStore.Audio.Media._ID,
                         MediaStore.Audio.Media.DURATION, MediaStore.Audio.Media.DATA, MediaStore.Audio.Media.ALBUM_ID},
                 MediaStore.Audio.Media.ALBUM_ID + "=?",
@@ -128,7 +130,7 @@ public class SongAccordingAlbum extends AppCompatActivity
                 int duration = cursor.getInt(cursor.getColumnIndex(MediaStore.Audio.Media.DURATION));
                 String path = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.DATA));
                 int albumID = cursor.getInt(cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM_ID));
-                String albumPath = albumPresenter.getConverArtPath(albumID);
+                String albumPath = albumPresenter.getCoverArtPath(albumID);
                 Songs song = new Songs(songId, title, artist, album, albumPath, duration, path);
                 listSong.add(song);
 

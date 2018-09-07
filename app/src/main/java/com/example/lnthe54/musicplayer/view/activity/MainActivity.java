@@ -19,7 +19,7 @@ import android.view.View;
 import com.example.lnthe54.musicplayer.R;
 import com.example.lnthe54.musicplayer.adapter.PagerAdapter;
 import com.example.lnthe54.musicplayer.config.Config;
-import com.example.lnthe54.musicplayer.model.entity.Songs;
+import com.example.lnthe54.musicplayer.model.Songs;
 import com.example.lnthe54.musicplayer.presenter.mainpresenter.MainPresenter;
 import com.example.lnthe54.musicplayer.view.fragment.AlbumsTab;
 import com.example.lnthe54.musicplayer.view.fragment.ArtistsTab;

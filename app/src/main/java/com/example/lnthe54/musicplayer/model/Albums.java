@@ -1,4 +1,4 @@
-package com.example.lnthe54.musicplayer.model.entity;
+package com.example.lnthe54.musicplayer.model;
 
 import android.graphics.Bitmap;
 

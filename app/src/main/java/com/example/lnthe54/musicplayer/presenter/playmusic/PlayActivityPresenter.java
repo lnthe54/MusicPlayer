@@ -15,6 +15,10 @@ public class PlayActivityPresenter {
         view.backMainActivity(nameSong, nameSinger);
     }
 
+    public void changeCircular() {
+        view.changeCircularBar();
+    }
+
     public void getDataIntent() {
         view.getDataIntent();
     }
@@ -23,8 +27,20 @@ public class PlayActivityPresenter {
         view.showListSong();
     }
 
-    public void setPlayMusic() {
-        view.setPlayMusic();
+    public void playPauseMusic() {
+        view.playPauseMusic();
+    }
+
+    public void updateHome() {
+        view.updateHome();
+    }
+
+    public void setAlbumArt() {
+        view.setAlbumArt();
+    }
+
+    public void playMusic() {
+        view.playMusic();
     }
 
     public interface View {
@@ -34,6 +50,14 @@ public class PlayActivityPresenter {
 
         void showListSong();
 
-        void setPlayMusic();
+        void changeCircularBar();
+
+        void playPauseMusic();
+
+        void updateHome();
+
+        void setAlbumArt();
+
+        void playMusic();
     }
 }

@@ -16,7 +16,7 @@ import android.view.ViewGroup;
 import com.example.lnthe54.musicplayer.R;
 import com.example.lnthe54.musicplayer.adapter.AlbumAdapter;
 import com.example.lnthe54.musicplayer.config.Config;
-import com.example.lnthe54.musicplayer.model.entity.Albums;
+import com.example.lnthe54.musicplayer.model.Albums;
 import com.example.lnthe54.musicplayer.presenter.songaccordingalbum.ViewAlbumPresenter;
 import com.example.lnthe54.musicplayer.view.activity.SongAccordingAlbum;
 

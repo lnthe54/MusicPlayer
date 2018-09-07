@@ -28,7 +28,7 @@ public class AccordingAlbumPresenter {
         view.showListSongOfAlbum(albumID);
     }
 
-    public String getConverArtPath(int albumID) {
+    public String getCoverArtPath(int albumID) {
         view.getCoverArtPath(albumID);
         return null;
     }

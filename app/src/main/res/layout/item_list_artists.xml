@@ -14,7 +14,7 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#80FFFFFF"
+        android:background="#80000000"
         android:padding="20dp">
 
         <TextView
@@ -22,22 +22,10 @@
             style="?android:textAppearanceSmall"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
             android:ellipsize="end"
             android:maxLines="2"
             android:minLines="2"
             android:textColor="@android:color/white" />
 
-        <TextView
-            android:id="@+id/tv_infor_artists"
-            style="?android:textAppearanceSmall"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/tv_artists_name"
-            android:layout_centerHorizontal="true"
-            android:ellipsize="end"
-            android:maxLines="1"
-            android:minLines="1"
-            android:textColor="@android:color/white" />
     </RelativeLayout>
 </RelativeLayout>

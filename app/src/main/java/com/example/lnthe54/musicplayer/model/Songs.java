@@ -1,4 +1,4 @@
-package com.example.lnthe54.musicplayer.model.entity;
+package com.example.lnthe54.musicplayer.model;
 
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -53,6 +53,22 @@ public class Songs implements Parcelable {
 
     public void setAuthor(String author) {
         this.author = author;
+    }
+
+    public String getAlbum() {
+        return album;
+    }
+
+    public String getAlbumImagePath() {
+        return albumImagePath;
+    }
+
+    public int getDuration() {
+        return duration;
+    }
+
+    public String getPath() {
+        return path;
     }
 
     public static final Parcelable.Creator CREATOR = new Parcelable.Creator() {

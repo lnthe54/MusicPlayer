@@ -8,7 +8,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.example.lnthe54.musicplayer.R;
-import com.example.lnthe54.musicplayer.model.entity.Artists;
+import com.example.lnthe54.musicplayer.model.Artists;
 
 import java.util.List;
 
@@ -37,7 +37,6 @@ public class ArtistsAdapter extends RecyclerView.Adapter<ArtistsAdapter.ViewHold
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Artists artists = listArtist.get(position);
         holder.tvNameArtist.setText(artists.getNameArtist());
-        holder.tvInforArtist.setText(artists.getInforArtist());
     }
 
     @Override
@@ -53,13 +52,12 @@ public class ArtistsAdapter extends RecyclerView.Adapter<ArtistsAdapter.ViewHold
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
-        TextView tvNameArtist, tvInforArtist;
+        TextView tvNameArtist;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
 
             tvNameArtist = itemView.findViewById(R.id.tv_artists_name);
-            tvInforArtist = itemView.findViewById(R.id.tv_infor_artists);
 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override

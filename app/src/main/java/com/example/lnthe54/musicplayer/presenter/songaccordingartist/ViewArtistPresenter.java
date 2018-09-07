@@ -16,12 +16,18 @@ public class ViewArtistPresenter {
         view.getData();
     }
 
+    public void showData() {
+        view.showData();
+    }
+
     public void showAccordingArtist(int position) {
         view.showAccordingArtist(position);
     }
 
     public interface View {
         void getData();
+
+        void showData();
 
         void showAccordingArtist(int position);
     }

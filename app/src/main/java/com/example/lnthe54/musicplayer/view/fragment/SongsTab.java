@@ -17,7 +17,7 @@ import android.widget.Toast;
 import com.example.lnthe54.musicplayer.R;
 import com.example.lnthe54.musicplayer.adapter.SongAdapter;
 import com.example.lnthe54.musicplayer.config.Config;
-import com.example.lnthe54.musicplayer.model.entity.Songs;
+import com.example.lnthe54.musicplayer.model.Songs;
 import com.example.lnthe54.musicplayer.presenter.playmusic.PlayMusicPresenter;
 import com.example.lnthe54.musicplayer.view.activity.PlayMusicActivity;
 
@@ -74,21 +74,14 @@ public class SongsTab extends Fragment implements SongAdapter.onCallBack, PlayMu
                 null, null, MediaStore.Audio.Media.TITLE);
 
         if (song != null && songCursor.moveToFirst()) {
-            int idColumn = songCursor.getColumnIndex(MediaStore.Audio.Media._ID);
-            int songTitle = songCursor.getColumnIndex(MediaStore.Audio.Media.TITLE);
-            int songArtists = songCursor.getColumnIndex(MediaStore.Audio.Media.ARTIST);
-            int album = songCursor.getColumnIndex(MediaStore.Audio.Media.ALBUM);
-            int duration = songCursor.getColumnIndex(MediaStore.Audio.Media.DURATION);
-            int albumID = songCursor.getColumnIndex(MediaStore.Audio.Media.ALBUM_ID);
-            int path = songCursor.getColumnIndex(MediaStore.Audio.Media.DATA);
-
             do {
-                long currentId = songCursor.getLong(idColumn);
-                String currentTitle = songCursor.getString(songTitle);
-                String currentArtists = songCursor.getString(songArtists);
-                String currentAlbum = songCursor.getString(album);
-                int currentDuration = songCursor.getInt(duration);
-                String albumPath = songCursor.getString(path);
+                long currentId = songCursor.getLong(songCursor.getColumnIndex(MediaStore.Audio.Media._ID));
+                String currentTitle = songCursor.getString(songCursor.getColumnIndex(MediaStore.Audio.Media.TITLE));
+                String currentArtists = songCursor.getString(songCursor.getColumnIndex(MediaStore.Audio.Media.ARTIST));
+                String currentAlbum = songCursor.getString(songCursor.getColumnIndex(MediaStore.Audio.Media.ALBUM));
+                int currentDuration = songCursor.getInt(songCursor.getColumnIndex(MediaStore.Audio.Media.DURATION));
+                String albumPath = songCursor.getString(songCursor.getColumnIndex(MediaStore.Audio.Media.DATA));
+                int albumID = songCursor.getColumnIndex(MediaStore.Audio.Media.ALBUM_ID);
                 String albumArt = playPresenter.getCoverArtPath(albumID);
 
                 listSong.add(new Songs(currentId, currentTitle, currentArtists, currentAlbum, albumArt, currentDuration, albumPath));

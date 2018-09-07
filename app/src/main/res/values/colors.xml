@@ -9,4 +9,5 @@
     <color name="point_color">#66CCFF</color>
     <color name="point_halo_color">#66CCFF</color>
     <color name="text_color">#66CCFF</color>
+    <color name="color_notification">#66CCFF</color>
 </resources>

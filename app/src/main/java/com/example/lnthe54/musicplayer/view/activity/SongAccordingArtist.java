@@ -1,6 +1,5 @@
 package com.example.lnthe54.musicplayer.view.activity;
 
-import android.content.ContentResolver;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
@@ -13,17 +12,14 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.ImageView;
 
 import com.example.lnthe54.musicplayer.R;
 import com.example.lnthe54.musicplayer.adapter.SongAdapter;
 import com.example.lnthe54.musicplayer.config.Config;
-import com.example.lnthe54.musicplayer.model.entity.Songs;
+import com.example.lnthe54.musicplayer.model.Songs;
 import com.example.lnthe54.musicplayer.presenter.songaccordingartist.AccordingArtistPresenter;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 
 /**
  * @author lnthe54 on 8/27/2018
@@ -31,9 +27,9 @@ import java.util.Comparator;
  */
 public class SongAccordingArtist extends AppCompatActivity implements SongAdapter.onCallBack, AccordingArtistPresenter.View {
     private Toolbar toolbar;
-    private ImageView ivArtistBG, ivArtist;
     private RecyclerView rvList;
     private String nameSinger;
+    private int artistID;
     private SongAdapter songAdapter;
     private ArrayList<Songs> listSong;
     private AccordingArtistPresenter artistPresenter;
@@ -57,53 +53,70 @@ public class SongAccordingArtist extends AppCompatActivity implements SongAdapte
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         setTitle(nameSinger);
+        listSong = new ArrayList<>();
         rvList = findViewById(R.id.rv_list);
-        artistPresenter.showListSong();
+        artistPresenter.showData();
+        artistPresenter.showListSongOfAlbum(artistID);
     }
 
     @Override
     public void getDataIntent() {
         Intent intent = getIntent();
+        artistID = intent.getIntExtra(Config.ID_ARTISTS, 0);
         nameSinger = intent.getStringExtra(Config.NAME_SINGER);
     }
 
     @Override
-    public void getMusic() {
-        ContentResolver contentResolver = getContentResolver();
-        Uri song = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
-        Cursor songCursor = contentResolver.query(song, null, null, null, null, null);
+    public void showListSongOfAlbum(int artistID) {
+        Uri artistUri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
+        Cursor cursor = getContentResolver().query(artistUri,
+                new String[]{MediaStore.Audio.Media.TITLE, MediaStore.Audio.Media.ALBUM,
+                        MediaStore.Audio.Media.ARTIST, MediaStore.Audio.Media._ID,
+                        MediaStore.Audio.Media.DURATION, MediaStore.Audio.Media.DATA, MediaStore.Audio.Media.ALBUM_ID},
+                MediaStore.Audio.Media.ARTIST_ID + "=?",
+                new String[]{String.valueOf(artistID)}, MediaStore.Audio.Media.TITLE + " ASC");
 
-        if (song != null && songCursor.moveToFirst()) {
-            int songID = songCursor.getColumnIndex(MediaStore.Audio.Media._ID);
-            int songTitle = songCursor.getColumnIndex(MediaStore.Audio.Media.TITLE);
-            int songArtists = songCursor.getColumnIndex(MediaStore.Audio.Media.ARTIST);
-
+        if (cursor != null && cursor.moveToFirst()) {
             do {
-                long currentId = songCursor.getLong(songID);
-                String currentTitle = songCursor.getString(songTitle);
-                String currentArtists = songCursor.getString(songArtists);
+                String title = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.TITLE));
+                String album = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM));
+                String artist = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ARTIST));
+                long songId = cursor.getLong(cursor.getColumnIndex(MediaStore.Audio.Media._ID));
+                int duration = cursor.getInt(cursor.getColumnIndex(MediaStore.Audio.Media.DURATION));
+                String path = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.DATA));
+                int albumID = cursor.getInt(cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM_ID));
+                String albumPath = artistPresenter.coverArtArtist(albumID);
+                Songs songs = new Songs(songId, title, artist, album, albumPath, duration, path);
+                listSong.add(songs);
 
-//                listSong.add(new Songs(currentId, currentTitle, currentArtists));
-
-                Collections.sort(listSong, new Comparator<Songs>() {
-                    @Override
-                    public int compare(Songs lhs, Songs rhs) {
-                        return lhs.getNameSong().compareTo(rhs.getNameSong());
-                    }
-                });
-            } while (songCursor.moveToNext());
+            } while (cursor.moveToNext());
         }
     }
 
     @Override
     public void showData() {
-        rvList.setLayoutManager(new LinearLayoutManager(SongAccordingArtist.this,
-                LinearLayoutManager.VERTICAL, false));
+        rvList.setLayoutManager(new LinearLayoutManager(SongAccordingArtist.this, LinearLayoutManager.VERTICAL, false));
         rvList.setHasFixedSize(true);
-        listSong = new ArrayList<>();
-        artistPresenter.getMusic();
         songAdapter = new SongAdapter(this, listSong);
         rvList.setAdapter(songAdapter);
+    }
+
+    @Override
+    public String coverArtArtist(int artistID) {
+        Cursor albumCursor = getContentResolver().query(
+                MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI,
+                new String[]{MediaStore.Audio.Albums.ALBUM_ART},
+                MediaStore.Audio.Albums._ID + " = ?",
+                new String[]{Long.toString(artistID)},
+                null
+        );
+        boolean queryResult = albumCursor.moveToFirst();
+        String result = null;
+        if (queryResult) {
+            result = albumCursor.getString(0);
+        }
+        albumCursor.close();
+        return result;
     }
 
     @Override

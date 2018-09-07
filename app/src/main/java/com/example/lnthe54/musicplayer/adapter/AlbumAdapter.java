@@ -11,7 +11,7 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.example.lnthe54.musicplayer.R;
-import com.example.lnthe54.musicplayer.model.entity.Albums;
+import com.example.lnthe54.musicplayer.model.Albums;
 
 import java.util.List;
 
@@ -43,6 +43,8 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.ViewHolder> 
         String path = listAlbums.get(position).getPathArtAlbum();
         if (path != null) {
             Glide.with(context).load(path).into(holder.ivAlbum);
+        } else {
+            holder.ivAlbum.setImageResource(R.drawable.bg_album_default);
         }
         holder.tvNameAlbum.setText(albums.getNameAlbum());
         holder.tvAuthor.setText(albums.getAuthor());

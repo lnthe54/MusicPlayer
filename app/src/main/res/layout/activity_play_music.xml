@@ -34,22 +34,24 @@
             android:padding="10dp">
 
             <com.example.lnthe54.musicplayer.view.custom.CircularSeekBar
+                android:id="@+id/circular_seek_bar"
                 android:layout_width="200dp"
                 android:layout_height="200dp"
-                android:layout_centerHorizontal="true"
+                android:layout_centerInParent="true"
                 app:circle_x_radius="100dp"
                 app:circle_y_radius="100dp"
                 app:max="100"
                 app:pointer_alpha_ontouch="100"
                 app:use_custom_radii="true" />
 
-            <ImageView
-                android:id="@+id/iv_bg_play"
+            <TextView
+                android:id="@+id/tv_time_played"
+                style="?android:textAppearanceLarge"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_centerHorizontal="true"
-                android:layout_margin="35dp"
-                android:src="@drawable/beats_logo2" />
+                android:layout_centerInParent="true"
+                android:text="00 : 00"
+                android:textColor="@android:color/white" />
 
             <ImageView
                 android:id="@+id/iv_previous_track"
@@ -72,16 +74,16 @@
                 android:id="@+id/iv_repeat"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignRight="@id/iv_bg_play"
-                android:layout_below="@+id/iv_bg_play"
+                android:layout_alignRight="@id/circular_seek_bar"
+                android:layout_below="@+id/circular_seek_bar"
                 android:src="@drawable/repeat_button" />
 
             <ImageView
                 android:id="@+id/iv_shuffle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignLeft="@id/iv_bg_play"
-                android:layout_below="@+id/iv_bg_play"
+                android:layout_alignLeft="@id/circular_seek_bar"
+                android:layout_below="@+id/circular_seek_bar"
                 android:src="@drawable/shuffle_button" />
         </RelativeLayout>
 
