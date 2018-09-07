@@ -1,16 +1,17 @@
 package com.example.lnthe54.musicplayer.view.activity;
 
-import android.content.ContentUris;
+import android.content.ComponentName;
 import android.content.Intent;
-import android.media.MediaPlayer;
-import android.net.Uri;
+import android.content.ServiceConnection;
 import android.os.Bundle;
-import android.provider.MediaStore;
+import android.os.Handler;
+import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -28,7 +29,6 @@ import com.example.lnthe54.musicplayer.presenter.playmusic.PlayActivityPresenter
 import com.example.lnthe54.musicplayer.service.PlayMusicService;
 import com.example.lnthe54.musicplayer.view.custom.CircularSeekBar;
 
-import java.io.IOException;
 import java.util.ArrayList;
 
 /**
@@ -60,18 +60,23 @@ public class PlayMusicActivity extends AppCompatActivity
 
     private PlayActivityPresenter activityPresenter;
 
-    @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_play_music);
+    ServiceConnection serviceConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder iBinder) {
+            PlayMusicService.LocalBinder binder = (PlayMusicService.LocalBinder) iBinder;
+            service = binder.getInstantBoundService();
+            AppController.getInstance().setPlayMusicService(service);
+            service.setRepeat(false);
+            playMusic();
+            activityPresenter.updateCircularSeekbar();
+            totalTime = service.getTotalTime();
+        }
 
-//        AppController.getInstance().setPlayMusicActivity(this);
-//        service = (PlayMusicService) AppController.getInstance().getPlayMusicService();
-        activityPresenter = new PlayActivityPresenter(this);
-        getSongTabIntent();
-        initViews();
-        addEvent();
-    }
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            Log.d("CHECK", "DISCONECTED");
+        }
+    };
 
     private void getSongTabIntent() {
         activityPresenter.getDataIntent();
@@ -97,9 +102,57 @@ public class PlayMusicActivity extends AppCompatActivity
         activityPresenter.showListSong();
     }
 
-
     private void addEvent() {
         ivPause.setOnClickListener(this);
+    }
+
+    @Override
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_play_music);
+
+        AppController.getInstance().setPlayMusicActivity(PlayMusicActivity.this);
+        service = (PlayMusicService) AppController.getInstance().getPlayMusicService();
+        activityPresenter = new PlayActivityPresenter(this);
+        getSongTabIntent();
+        initViews();
+
+        if (service == null) {
+            initPlayService();
+        } else {
+            activityPresenter.updateCircularSeekbar();
+            setName();
+            if (!isPlaying) {
+                activityPresenter.playMusic();
+            }
+        }
+        addEvent();
+
+        activityPresenter.updateHome();
+    }
+
+    public void initPlayService() {
+        Intent intent = new Intent(this, PlayMusicService.class);
+        bindService(intent, serviceConnection, BIND_AUTO_CREATE);
+    }
+
+    @Override
+    public void updateCircularSeekbar() {
+        circularSeekBar.setMax(totalTime);
+        int currentLength = service.getCurrentLength();
+
+        if (!isSeeking) {
+            circularSeekBar.setProgress(currentLength);
+            tvTimePlayed.setText(Common.miliSecondToString(currentLength));
+        }
+//        tvTotalTime.setText(Common.miliSecondToString(totalTime));
+        Handler musicHandler = new Handler();
+        musicHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                activityPresenter.updateCircularSeekbar();
+            }
+        });
     }
 
     public void changeButton() {

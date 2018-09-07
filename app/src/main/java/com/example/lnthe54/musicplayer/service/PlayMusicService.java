@@ -102,7 +102,7 @@ public class PlayMusicService extends Service {
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
-        return null;
+        return localBinder;
     }
 
     @Override
@@ -264,6 +264,10 @@ public class PlayMusicService extends Service {
 
     public int getTotalTime() {
         return mediaPlayer.getDuration() / 1000;
+    }
+
+    public int getCurrentLength() {
+        return mediaPlayer.getCurrentPosition() / 1000;
     }
 
     public int getNextPosition() {

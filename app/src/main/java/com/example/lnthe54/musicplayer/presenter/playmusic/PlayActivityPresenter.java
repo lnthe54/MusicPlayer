@@ -43,6 +43,10 @@ public class PlayActivityPresenter {
         view.playMusic();
     }
 
+    public void updateCircularSeekbar() {
+        view.updateCircularSeekbar();
+    }
+
     public interface View {
         void backMainActivity(String nameSong, String nameSinger);
 
@@ -59,5 +63,7 @@ public class PlayActivityPresenter {
         void setAlbumArt();
 
         void playMusic();
+
+        void updateCircularSeekbar();
     }
 }

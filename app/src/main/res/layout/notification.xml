@@ -39,18 +39,21 @@
         android:padding="20dp">
 
         <ImageView
+            android:id="@+id/iv_previous_track_notification"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:src="@drawable/previous_track_notification" />
 
         <ImageView
+            android:id="@+id/iv_pause_notification"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:src="@drawable/pause_notification" />
 
         <ImageView
+            android:id="@+id/iv_next_track_notification"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
