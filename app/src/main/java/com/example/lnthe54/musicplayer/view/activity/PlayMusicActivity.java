@@ -1,7 +1,10 @@
 package com.example.lnthe54.musicplayer.view.activity;
 
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.Handler;
@@ -17,6 +20,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.lnthe54.musicplayer.R;
 import com.example.lnthe54.musicplayer.adapter.SongAdapter;
@@ -38,6 +42,7 @@ import java.util.ArrayList;
 public class PlayMusicActivity extends AppCompatActivity
         implements SongAdapter.onCallBack, View.OnClickListener, PlayActivityPresenter.View {
 
+    private static final String TAG = "PlayMusicActivity";
     private Toolbar toolbar;
     int totalTime;
     int currentPos;
@@ -48,17 +53,38 @@ public class PlayMusicActivity extends AppCompatActivity
     private ArrayList<Songs> listSong = new ArrayList<>();
     private SongAdapter songAdapter;
     private CircularSeekBar circularSeekBar;
-    private ImageView ivPreviousTrack;
+    BroadcastReceiver broadcastReceiverSongCompleted = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            nextMusic();
+            totalTime = service.getTotalTime();
+            activityPresenter.updateCircularSeekbar();
+            activityPresenter.updateHome();
+//            service.showNotification(true);
+            Common.updateMainActivity();
+        }
+    };
     private String nameSong;
     private String nameSinger;
-    private long id;
-    private ImageView ivNextTrack;
+    BroadcastReceiver broadcastReceiverSwitchSong = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            currentPos = intent.getExtras().getInt(Config.ID_SWITH);
+            path = listSong.get(currentPos).getPath();
+            service.setDataForNotification(listSong,
+                    currentPos, listSong.get(currentPos), listSong.get(currentPos).getAlbumImagePath());
+            playMusic();
+//            service.showNotification(true);
+        }
+    };
     private ImageView ivPause;
     private TextView tvTimePlayed;
     private PlayMusicService service;
     private String path;
 
     private PlayActivityPresenter activityPresenter;
+    private ImageView ivPreviousTrack, ivNextTrack;
+
 
     ServiceConnection serviceConnection = new ServiceConnection() {
         @Override
@@ -82,29 +108,7 @@ public class PlayMusicActivity extends AppCompatActivity
         activityPresenter.getDataIntent();
     }
 
-    private void initViews() {
-        toolbar = findViewById(R.id.toolbar);
-        toolbar.setTitle(nameSong);
-        toolbar.setSubtitle(nameSinger);
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
-        tvTimePlayed = findViewById(R.id.tv_time_played);
-
-        ivPreviousTrack = findViewById(R.id.iv_previous_track);
-        ivNextTrack = findViewById(R.id.iv_next_track);
-
-        circularSeekBar = findViewById(R.id.circular_seek_bar);
-        activityPresenter.changeCircular();
-
-        ivPause = findViewById(R.id.btn_pause);
-        rvSong = findViewById(R.id.rv_song);
-        activityPresenter.showListSong();
-    }
-
-    private void addEvent() {
-        ivPause.setOnClickListener(this);
-    }
+    private ImageView ivShuffle, ivRepeat;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -125,6 +129,12 @@ public class PlayMusicActivity extends AppCompatActivity
             if (!isPlaying) {
                 activityPresenter.playMusic();
             }
+
+            updateRepeatButton();
+            updateShuffleButton();
+            updatePlayPauseButton();
+            registerBroadcastSongComplete();
+            registerBroadcastSwitchSong();
         }
         addEvent();
 
@@ -134,6 +144,60 @@ public class PlayMusicActivity extends AppCompatActivity
     public void initPlayService() {
         Intent intent = new Intent(this, PlayMusicService.class);
         bindService(intent, serviceConnection, BIND_AUTO_CREATE);
+    }
+
+    private void initViews() {
+        setName();
+        toolbar = findViewById(R.id.toolbar);
+        toolbar.setTitle(nameSong);
+        toolbar.setSubtitle(nameSinger);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        tvTimePlayed = findViewById(R.id.tv_time_played);
+
+        ivPreviousTrack = findViewById(R.id.iv_previous_track);
+        ivNextTrack = findViewById(R.id.iv_next_track);
+
+        ivRepeat = findViewById(R.id.iv_repeat);
+        ivShuffle = findViewById(R.id.iv_shuffle);
+
+        circularSeekBar = findViewById(R.id.circular_seek_bar);
+        activityPresenter.changeCircular();
+
+        ivPause = findViewById(R.id.btn_pause);
+        rvSong = findViewById(R.id.rv_song);
+        activityPresenter.showListSong();
+
+        isSeeking = false;
+    }
+
+    private void addEvent() {
+        ivPause.setOnClickListener(this);
+        ivRepeat.setOnClickListener(this);
+        ivShuffle.setOnClickListener(this);
+        ivNextTrack.setOnClickListener(this);
+        ivPreviousTrack.setOnClickListener(this);
+    }
+
+    private void registerBroadcastSongComplete() {
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(ConfigService.ACTION_COMPLETE_SONG);
+        registerReceiver(broadcastReceiverSongCompleted, intentFilter);
+    }
+
+    private void unRegisterBroadcastSongComplete() {
+        unregisterReceiver(broadcastReceiverSongCompleted);
+    }
+
+    private void registerBroadcastSwitchSong() {
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(ConfigService.ACTION_SWITCH_SONG);
+        registerReceiver(broadcastReceiverSwitchSong, intentFilter);
+    }
+
+    private void unRegisterBroadcastSwitchSong() {
+        unregisterReceiver(broadcastReceiverSwitchSong);
     }
 
     @Override
@@ -179,7 +243,6 @@ public class PlayMusicActivity extends AppCompatActivity
 
     @Override
     public void onClickSong(int position) {
-        //TODO
     }
 
     @Override
@@ -192,6 +255,26 @@ public class PlayMusicActivity extends AppCompatActivity
         switch (view.getId()) {
             case R.id.btn_pause: {
                 activityPresenter.playPauseMusic();
+                break;
+            }
+
+            case R.id.iv_repeat: {
+                updateRepeatButton();
+                break;
+            }
+
+            case R.id.iv_shuffle: {
+                updateShuffleButton();
+                break;
+            }
+
+            case R.id.iv_next_track: {
+                nextMusic();
+                break;
+            }
+
+            case R.id.iv_previous_track: {
+                backMusic();
                 break;
             }
         }
@@ -218,7 +301,7 @@ public class PlayMusicActivity extends AppCompatActivity
                     ivPause.setImageResource(R.drawable.pause_button1);
                 }
                 isSeeking = false;
-                //updateSeekBar();
+                activityPresenter.updateCircularSeekbar();
             }
         });
     }
@@ -227,11 +310,6 @@ public class PlayMusicActivity extends AppCompatActivity
     public void updateHome() {
         Intent intent = new Intent(ConfigService.ACTION_UPDATE_PlAY_STATUS);
         sendBroadcast(intent);
-    }
-
-    @Override
-    public void setAlbumArt() {
-
     }
 
     private void setName() {
@@ -243,12 +321,12 @@ public class PlayMusicActivity extends AppCompatActivity
     public void playMusic() {
         service.playMusic(path);
         totalTime = service.getTotalTime();
+        Log.d(TAG, "playMusic: " + currentPos);
         Songs songs = listSong.get(currentPos);
         service.setDataForNotification(listSong, currentPos, songs, songs.getAlbumImagePath());
         Intent openService = new Intent(this, PlayMusicService.class);
         startService(openService);
         setName();
-        setAlbumArt();
 //        service.showNotification(true);
         activityPresenter.updateHome();
     }
@@ -262,7 +340,7 @@ public class PlayMusicActivity extends AppCompatActivity
             ivPause.setImageResource(R.drawable.pause_button1);
             service.resumeMusic();
         }
-        service.changePlayPauseState();
+//        service.changePlayPauseState();
         activityPresenter.updateHome();
     }
 
@@ -276,7 +354,7 @@ public class PlayMusicActivity extends AppCompatActivity
 
     public void pauseMusic() {
         if (service.isPlaying()) {
-            ivPause.setImageResource(R.drawable.pause_button1);
+            ivPause.setImageResource(R.drawable.play_button1);
             service.pauseMusic();
             activityPresenter.updateHome();
         }
@@ -287,8 +365,39 @@ public class PlayMusicActivity extends AppCompatActivity
             currentPos = service.getNextPosition();
             path = listSong.get(currentPos).getPath();
         }
-        activityPresenter.setAlbumArt();
         activityPresenter.playMusic();
+    }
+
+    public void backMusic() {
+        currentPos = service.getPrePosition();
+        path = listSong.get(currentPos).getPath();
+        activityPresenter.playMusic();
+    }
+
+    public void updatePlayPauseButton() {
+        if (service != null) {
+            if (service.isPlaying()) {
+                ivPause.setImageResource(R.drawable.pause_button1);
+            } else {
+                ivPause.setImageResource(R.drawable.play_button1);
+            }
+        }
+    }
+
+    public void updateShuffleButton() {
+        if (service.isShuffle()) {
+            ivShuffle.setImageResource(R.drawable.shuffle_btn1);
+        } else {
+            ivShuffle.setImageResource(R.drawable.shuffle_button);
+        }
+    }
+
+    public void updateRepeatButton() {
+        if (service.isRepeat()) {
+            ivRepeat.setImageResource(R.drawable.repeat_btn1);
+        } else {
+            ivRepeat.setImageResource(R.drawable.repeat_button);
+        }
     }
 
     @Override
@@ -303,17 +412,34 @@ public class PlayMusicActivity extends AppCompatActivity
     @Override
     public void getDataIntent() {
         Intent intent = getIntent();
-        nameSong = intent.getStringExtra(Config.NAME_SONG);
-        nameSinger = intent.getStringExtra(Config.NAME_SINGER);
-        id = intent.getLongExtra(Config.ID_SONG, 0);
-        listSong = intent.getParcelableArrayListExtra(Config.LIST_SONG);
+        isPlaying = intent.getExtras().getBoolean(Config.IS_PLAYING);
+        if (isPlaying) {
+            path = service.getCurrentSong().getPath();
+            currentPos = service.getCurrentSongPos();
+            listSong = service.getLstSongPlaying();
+            isShuffle = service.isShuffle();
+        } else {
+            path = intent.getStringExtra(Config.PATH_SONG);
+            currentPos = intent.getIntExtra(Config.POSITION_SONG, 0);
+            listSong = intent.getParcelableArrayListExtra(Config.LIST_SONG);
+        }
+
     }
 
     @Override
     public void showListSong() {
-        rvSong.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
+        rvSong.setLayoutManager(new LinearLayoutManager(this,
+                LinearLayoutManager.VERTICAL, false));
         rvSong.setHasFixedSize(true);
         songAdapter = new SongAdapter(this, listSong);
         rvSong.setAdapter(songAdapter);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        unRegisterBroadcastSongComplete();
+        unRegisterBroadcastSwitchSong();
+        AppController.getInstance().setPlayMusicActivity(null);
     }
 }

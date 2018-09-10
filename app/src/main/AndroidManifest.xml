@@ -24,6 +24,17 @@
 
         <service android:name=".service.PlayMusicService" />
 
+        <receiver android:name=".receivers.NextMusicBroadcastReceiver">
+            <intent-filter>
+                <action android:name="com.example.lnthe54.musicplayer.NEXT_MUSIC" />
+            </intent-filter>
+        </receiver>
+
+        <receiver android:name=".receivers.PlayPauseMusicBroadcastReceiver">
+            <intent-filter>
+                <action android:name="com.example.lnthe54.musicplayer.PAUSE_MUSIC" />
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>

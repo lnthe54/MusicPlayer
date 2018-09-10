@@ -3,12 +3,17 @@ package com.example.lnthe54.musicplayer.service;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.Service;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Binder;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
+import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.util.Log;
@@ -16,8 +21,11 @@ import android.widget.RemoteViews;
 
 import com.example.lnthe54.musicplayer.R;
 import com.example.lnthe54.musicplayer.config.AppController;
+import com.example.lnthe54.musicplayer.config.Common;
+import com.example.lnthe54.musicplayer.config.Config;
 import com.example.lnthe54.musicplayer.config.ConfigService;
 import com.example.lnthe54.musicplayer.model.Songs;
+import com.example.lnthe54.musicplayer.receivers.RemoteReceiver;
 import com.example.lnthe54.musicplayer.view.activity.MainActivity;
 import com.example.lnthe54.musicplayer.view.activity.PlayMusicActivity;
 
@@ -49,46 +57,41 @@ public class PlayMusicService extends Service {
     Notification n;
     AudioManager audioManager;
     int result;
+    LocalBinder localBinder = new LocalBinder();
+    boolean isRepeat = false;
+    boolean isShowNotification = false;
+
     MediaSessionCompat mediaSession;
     AudioManager.OnAudioFocusChangeListener afChangeListener = new AudioManager.OnAudioFocusChangeListener() {
         @Override
         public void onAudioFocusChange(int focusChange) {
             PlayMusicActivity activity = (PlayMusicActivity) AppController.getInstance().getPlayMusicActivity();
-            Log.d("check", "focusChange->" + focusChange);
             switch (focusChange) {
                 case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT:
 
                     if (activity == null) {
                         pauseMusic();
                     } else {
-//                        activity.pauseMusic();
-                        Log.d("check", "AUDIOFOCUS_LOSS_TRANSIENT");
+                        activity.pauseMusic();
                     }
                     break;
                 case AudioManager.AUDIOFOCUS_GAIN:
                     if (activity == null) {
                         resumeMusic();
                     } else {
-//                        activity.resumeMusic();
-                        Log.d("check", "AUDIOFOCUS_GAIN");
+                        activity.resumeMusic();
                     }
                     break;
                 case AudioManager.AUDIOFOCUS_LOSS:
-//                    audioManager.abandonAudioFocus(afChangeListener);
                     if (activity == null) {
                         pauseMusic();
                     } else {
-//                        activity.pauseMusic();
-                        Log.d("check", "AUDIOFOCUS_LOSS");
+                        activity.pauseMusic();
                     }
-
                     break;
             }
         }
     };
-    private LocalBinder localBinder = new LocalBinder();
-    private boolean isRepeat = false;
-    private boolean isShowNotification = false;
 
     public void setDataForNotification(ArrayList<Songs> lstSong, int currentPos, Songs sogCurrent, String albumArtPath) {
         this.lstSongPlaying = lstSong;
@@ -96,7 +99,19 @@ public class PlayMusicService extends Service {
         this.albumArtPath = albumArtPath;
         this.currentSong = sogCurrent;
 
-//        showLockScreen();
+        showLockScreen();
+    }
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+
+        audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+        result = audioManager.requestAudioFocus(afChangeListener,
+                AudioManager.STREAM_MUSIC,
+                AudioManager.AUDIOFOCUS_GAIN);
+        histories = new ArrayList<>();
+        rand = new Random();
     }
 
     @Nullable
@@ -149,6 +164,37 @@ public class PlayMusicService extends Service {
         }
     }
 
+    public void showLockScreen() {
+        ComponentName receiver = new ComponentName(getPackageName(), RemoteReceiver.class.getName());
+        mediaSession = new MediaSessionCompat(this, "PlayService", receiver, null);
+        mediaSession.setFlags(MediaSessionCompat.FLAG_HANDLES_MEDIA_BUTTONS |
+                MediaSessionCompat.FLAG_HANDLES_TRANSPORT_CONTROLS);
+        mediaSession.setPlaybackState(new PlaybackStateCompat.Builder()
+                .setState(PlaybackStateCompat.STATE_PAUSED, 0, 1.0f)
+                .setActions(PlaybackStateCompat.ACTION_PLAY_PAUSE | PlaybackStateCompat.ACTION_SKIP_TO_NEXT | PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS)
+                .build());
+        Bitmap bitmap = BitmapFactory.decodeFile(currentSong.getAlbumImagePath());
+        mediaSession.setMetadata(new MediaMetadataCompat.Builder()
+                .putString(MediaMetadataCompat.METADATA_KEY_ARTIST, currentSong.getAuthor())
+                .putString(MediaMetadataCompat.METADATA_KEY_ALBUM, currentSong.getAlbum() + " - " + currentSong.getAuthor())
+                .putString(MediaMetadataCompat.METADATA_KEY_TITLE, currentSong.getNameSong())
+                .putLong(MediaMetadataCompat.METADATA_KEY_DURATION, mediaPlayer.getDuration())
+                .putBitmap(MediaMetadataCompat.METADATA_KEY_ALBUM_ART, bitmap)
+                .build());
+        mediaSession.setActive(true);
+    }
+
+    public boolean isShowNotification() {
+        return isShowNotification;
+    }
+
+    public void pauseMusic() {
+        if (mediaPlayer != null && mediaPlayer.isPlaying()) {
+            mediaPlayer.pause();
+//            changePlayPauseState();
+        }
+    }
+
     private void releaseMusic() {
         if (mediaPlayer != null && mediaPlayer.isPlaying()) {
             stopMusic();
@@ -156,17 +202,41 @@ public class PlayMusicService extends Service {
         }
     }
 
-    public void pauseMusic() {
-        if (mediaPlayer != null && mediaPlayer.isPlaying()) {
-            mediaPlayer.pause();
-            changePlayPauseState();
-        }
-    }
-
     public void resumeMusic() {
         if (mediaPlayer != null && !mediaPlayer.isPlaying()) {
             mediaPlayer.start();
-            changePlayPauseState();
+//            changePlayPauseState();
+        }
+    }
+
+    public void playMusic(String path) {
+        releaseMusic();
+        mediaPlayer = new MediaPlayer();
+        mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            @Override
+            public void onCompletion(MediaPlayer mp) {
+                if (AppController.getInstance().getPlayMusicActivity() != null) {
+                    Intent intent = new Intent(ConfigService.ACTION_COMPLETE_SONG);
+                    sendBroadcast(intent);
+                    //showNotification(true);
+                    Common.updateMainActivity();
+                } else {
+                    if (isRepeat()) {
+                        playMusic(currentSong.getPath());
+                    } else {
+                        nextMusic();
+                    }
+                }
+            }
+        });
+        try {
+            mediaPlayer.setDataSource(path);
+            mediaPlayer.prepare();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        if (result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
+            mediaPlayer.start();
         }
     }
 
@@ -206,35 +276,13 @@ public class PlayMusicService extends Service {
 
     }
 
-    public void playMusic(String path) {
-        releaseMusic();
-        mediaPlayer = new MediaPlayer();
-        mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-            @Override
-            public void onCompletion(MediaPlayer mp) {
-                if (AppController.getInstance().getPlayMusicActivity() != null) {
-                    Intent intent = new Intent(ConfigService.ACTION_COMPLETE_SONG);
-                    sendBroadcast(intent);
-                    //showNotification(true);
-                    //Common.updateMainActivity();
-                } else {
-                    if (isRepeat()) {
-                        playMusic(currentSong.getPath());
-                    } else {
-                        nextMusic();
-                    }
-                }
-            }
-        });
-        try {
-            mediaPlayer.setDataSource(path);
-            mediaPlayer.prepare();
-        } catch (IOException e) {
-            e.printStackTrace();
+    public void changePlayPauseState() {
+        if (isPlaying()) {
+            bigViews.setImageViewResource(R.id.iv_pause_notification, R.drawable.pause_notification);
+        } else {
+//            bigViews.setImageViewResource(R.id.iv_, R.drawable.pb_play);
         }
-        if (result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
-            mediaPlayer.start();
-        }
+        startForeground(NOTIFICATION_ID, n);
     }
 
     public void stopMusic() {
@@ -243,23 +291,20 @@ public class PlayMusicService extends Service {
         }
     }
 
+    private void setAlbumArt() {
+        Intent intent1 = new Intent(ConfigService.ACTION_CHANGE_ALBUM_ART);
+        intent1.putExtra(Config.KEY_ALBUM, lstSongPlaying.get(currentSongPos).getAlbumImagePath());
+        sendBroadcast(intent1);
+    }
+
     public boolean isPlaying() {
         return mediaPlayer.isPlaying();
     }
 
-    public void changePlayPauseState() {
-//        if (isPlaying()) {
-//            bigViews.setImageViewResource(R.id.btn_play_pause_noti, R.drawable.pb_pause);
-//        } else {
-//            bigViews.setImageViewResource(R.id.btn_play_pause_noti, R.drawable.pb_play);
-//        }
-        startForeground(NOTIFICATION_ID, n);
-    }
-
-    private void setAlbumArt() {
-        Intent intent1 = new Intent(ConfigService.ACTION_CHANGE_ALBUM_ART);
-        //intent1.putExtra(FragmentPlay.KEY_ALBUM_PLAY, lstSongPlaying.get(currentSongPos).getAlbumImagePath());
-        sendBroadcast(intent1);
+    public class LocalBinder extends Binder {
+        public PlayMusicService getInstantBoundService() {
+            return PlayMusicService.this;
+        }
     }
 
     public int getTotalTime() {
@@ -351,12 +396,6 @@ public class PlayMusicService extends Service {
     public void onDestroy() {
         super.onDestroy();
         audioManager.abandonAudioFocus(afChangeListener);
-    }
-
-    public class LocalBinder extends Binder {
-        public PlayMusicService getInstantBoundService() {
-            return PlayMusicService.this;
-        }
     }
 
 }

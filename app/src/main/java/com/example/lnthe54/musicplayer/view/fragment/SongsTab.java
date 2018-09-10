@@ -9,10 +9,10 @@ import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import com.example.lnthe54.musicplayer.R;
 import com.example.lnthe54.musicplayer.adapter.SongAdapter;
@@ -25,7 +25,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 
-import static android.app.Activity.RESULT_OK;
+import static android.support.constraint.Constraints.TAG;
 
 public class SongsTab extends Fragment implements SongAdapter.onCallBack, PlayMusicPresenter.PlayMusicActivity {
 
@@ -75,7 +75,7 @@ public class SongsTab extends Fragment implements SongAdapter.onCallBack, PlayMu
 
         if (song != null && songCursor.moveToFirst()) {
             do {
-                long currentId = songCursor.getLong(songCursor.getColumnIndex(MediaStore.Audio.Media._ID));
+                int currentId = songCursor.getInt(songCursor.getColumnIndex(MediaStore.Audio.Media._ID));
                 String currentTitle = songCursor.getString(songCursor.getColumnIndex(MediaStore.Audio.Media.TITLE));
                 String currentArtists = songCursor.getString(songCursor.getColumnIndex(MediaStore.Audio.Media.ARTIST));
                 String currentAlbum = songCursor.getString(songCursor.getColumnIndex(MediaStore.Audio.Media.ALBUM));
@@ -84,6 +84,7 @@ public class SongsTab extends Fragment implements SongAdapter.onCallBack, PlayMu
                 int albumID = songCursor.getColumnIndex(MediaStore.Audio.Media.ALBUM_ID);
                 String albumArt = playPresenter.getCoverArtPath(albumID);
 
+                Log.d(TAG, "path" + albumPath);
                 listSong.add(new Songs(currentId, currentTitle, currentArtists, currentAlbum, albumArt, currentDuration, albumPath));
 
                 Collections.sort(listSong, new Comparator<Songs>() {
@@ -120,42 +121,19 @@ public class SongsTab extends Fragment implements SongAdapter.onCallBack, PlayMu
     }
 
     @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == Config.REQUEST_CODE) {
-            if (resultCode == RESULT_OK) {
-                if (data != null) {
-
-                    String nameSong = data.getStringExtra(Config.NAME_SONG);
-                    String singerSong = data.getStringExtra(Config.NAME_SINGER);
-
-//                    MainActivity.tvNameSongPlaying.setText(nameSong);
-//                    MainActivity.tvAuthorSongPlaying.setText(singerSong);
-//                    MainActivity.ivPause.setVisibility(View.VISIBLE);
-//                    MainActivity.ivPlay.setVisibility(View.INVISIBLE);
-                }
-            } else {
-                Toast.makeText(getContext(), "Message", Toast.LENGTH_SHORT).show();
-            }
-        }
-        super.onActivityResult(requestCode, resultCode, data);
-    }
-
-    @Override
     public void showPlayMusicActivity(int position) {
         Intent openPlayMusic = new Intent(getContext(), PlayMusicActivity.class);
 
-        long songId = listSong.get(position).getId();
-        String nameSong = listSong.get(position).getNameSong();
-        String nameSinger = listSong.get(position).getAuthor();
-
-        openPlayMusic.putExtra(Config.NAME_SONG, nameSong);
-        openPlayMusic.putExtra(Config.NAME_SINGER, nameSinger);
-        openPlayMusic.putExtra(Config.ID_SONG, songId);
+        openPlayMusic.putExtra(Config.NAME_SONG, listSong.get(position).getNameSong());
+        openPlayMusic.putExtra(Config.NAME_SINGER, listSong.get(position).getAuthor());
+        openPlayMusic.putExtra(Config.POSITION_SONG, position);
+        openPlayMusic.putExtra(Config.PATH_SONG, listSong.get(position).getPath());
+        openPlayMusic.putExtra(Config.IS_PLAYING, false);
 
         Bundle bundle = new Bundle();
         bundle.putParcelableArrayList(Config.LIST_SONG, listSong);
 
         openPlayMusic.putExtras(bundle);
-        startActivityForResult(openPlayMusic, Config.REQUEST_CODE);
+        startActivity(openPlayMusic);
     }
 }

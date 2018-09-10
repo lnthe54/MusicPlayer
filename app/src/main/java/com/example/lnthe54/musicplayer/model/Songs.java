@@ -8,7 +8,7 @@ import android.os.Parcelable;
  * @project MusicPlayer
  */
 public class Songs implements Parcelable {
-    private long id;
+    private int id;
     private String nameSong;
     private String author;
     private String album;
@@ -16,7 +16,7 @@ public class Songs implements Parcelable {
     private int duration;
     private String path;
 
-    public Songs(long id, String nameSong, String author, String album, int duration, String path) {
+    public Songs(int id, String nameSong, String author, String album, int duration, String path) {
         this.id = id;
         this.nameSong = nameSong;
         this.author = author;
@@ -25,7 +25,7 @@ public class Songs implements Parcelable {
         this.path = path;
     }
 
-    public Songs(long id, String nameSong, String author, String album, String albumImagePath, int duration, String path) {
+    public Songs(int id, String nameSong, String author, String album, String albumImagePath, int duration, String path) {
         this.id = id;
         this.nameSong = nameSong;
         this.author = author;
@@ -35,11 +35,11 @@ public class Songs implements Parcelable {
         this.path = path;
     }
 
-    public long getId() {
+    public int getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(int id) {
         this.id = id;
     }
 

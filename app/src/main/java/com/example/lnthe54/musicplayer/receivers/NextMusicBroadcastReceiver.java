@@ -18,7 +18,7 @@ public class NextMusicBroadcastReceiver extends BroadcastReceiver {
         PlayMusicActivity musicActivity = (PlayMusicActivity) AppController.getInstance().getPlayMusicActivity();
         PlayMusicService musicService = (PlayMusicService) AppController.getInstance().getPlayMusicService();
         if (musicActivity != null) {
-            // musicActivity.nextMusic();
+            musicActivity.nextMusic();
 
         } else {
             musicService.nextMusic();

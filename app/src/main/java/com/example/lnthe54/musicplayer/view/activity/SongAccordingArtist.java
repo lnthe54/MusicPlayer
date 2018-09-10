@@ -81,7 +81,7 @@ public class SongAccordingArtist extends AppCompatActivity implements SongAdapte
                 String title = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.TITLE));
                 String album = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM));
                 String artist = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ARTIST));
-                long songId = cursor.getLong(cursor.getColumnIndex(MediaStore.Audio.Media._ID));
+                int songId = cursor.getInt(cursor.getColumnIndex(MediaStore.Audio.Media._ID));
                 int duration = cursor.getInt(cursor.getColumnIndex(MediaStore.Audio.Media.DURATION));
                 String path = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.DATA));
                 int albumID = cursor.getInt(cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM_ID));

@@ -10,7 +10,7 @@ import android.support.v4.app.ActivityCompat;
  * @project MusicPlayer
  */
 public class AppController extends Application {
-    private static AppController controller;
+    private static AppController controller = new AppController();
 
     private Service playMusicService;
     private Activity playMusicActivity;

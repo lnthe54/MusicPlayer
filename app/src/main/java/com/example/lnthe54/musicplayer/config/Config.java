@@ -18,4 +18,10 @@ public class Config {
     public static final String LIST_SONG = "list song";
     public static final String ID_ALBUM = "id album";
     public static final String ID_ARTISTS = "id artists";
+    public static final String KEY_ALBUM = "key album";
+    public static final String ID_SWITH = "id swith";
+
+    public static final String PATH_SONG = "path song";
+    public static final String IS_PLAYING = "is playing";
+    public static final String POSITION_SONG = "position";
 }

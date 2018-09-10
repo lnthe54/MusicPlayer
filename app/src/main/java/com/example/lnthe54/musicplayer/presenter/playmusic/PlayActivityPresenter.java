@@ -35,10 +35,6 @@ public class PlayActivityPresenter {
         view.updateHome();
     }
 
-    public void setAlbumArt() {
-        view.setAlbumArt();
-    }
-
     public void playMusic() {
         view.playMusic();
     }
@@ -59,8 +55,6 @@ public class PlayActivityPresenter {
         void playPauseMusic();
 
         void updateHome();
-
-        void setAlbumArt();
 
         void playMusic();
 
