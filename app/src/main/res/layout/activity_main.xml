@@ -52,7 +52,7 @@
             android:layout_height="wrap_content"
             android:layout_alignLeft="@id/seek_bar"
             android:layout_below="@id/seek_bar"
-            android:layout_toLeftOf="@id/iv_play"
+            android:layout_toLeftOf="@id/iv_pause"
             android:ellipsize="end"
             android:maxLines="1"
             android:minLines="1" />
@@ -64,7 +64,7 @@
             android:layout_height="wrap_content"
             android:layout_alignLeft="@id/tv_name_song_playing"
             android:layout_below="@id/tv_name_song_playing"
-            android:layout_toLeftOf="@id/iv_play"
+            android:layout_toLeftOf="@id/iv_pause"
             android:ellipsize="end"
             android:maxLines="1"
             android:minLines="1" />
@@ -79,15 +79,6 @@
             android:thumb="@android:color/transparent" />
 
         <ImageView
-            android:id="@+id/iv_play"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_centerVertical="true"
-            android:layout_marginRight="20dp"
-            android:src="@drawable/play_button" />
-
-        <ImageView
             android:id="@+id/iv_pause"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -95,7 +86,7 @@
             android:layout_centerVertical="true"
             android:layout_marginRight="20dp"
             android:src="@drawable/pause_button"
-            android:visibility="invisible" />
+            android:visibility="visible" />
     </RelativeLayout>
 
 </RelativeLayout>

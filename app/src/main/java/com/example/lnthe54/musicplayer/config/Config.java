@@ -13,13 +13,12 @@ public class Config {
     public static final String NAME_SINGER = "name singer";
     public static final int NUM_COLUMN = 2;
     public static final int REQUEST_CODE = 2;
-    public static final String ID_SONG = "id song";
     public static final String IMAGE = "image";
     public static final String LIST_SONG = "list song";
     public static final String ID_ALBUM = "id album";
     public static final String ID_ARTISTS = "id artists";
     public static final String KEY_ALBUM = "key album";
-    public static final String ID_SWITH = "id swith";
+    public static final String ID_SWITCH = "id switch";
 
     public static final String PATH_SONG = "path song";
     public static final String IS_PLAYING = "is playing";

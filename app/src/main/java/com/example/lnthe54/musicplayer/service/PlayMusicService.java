@@ -44,22 +44,21 @@ public class PlayMusicService extends Service {
     private static final int NOTIFICATION_ID = 5498;
 
     private static MediaPlayer mediaPlayer;
-    ArrayList<Songs> lstSongPlaying;
-    ArrayList<Integer> histories;
-    Random rand;
-    boolean isShuffle = false;
-    int currentSongPos;
-    String albumArtPath;
-    Songs currentSong;
-    RemoteViews bigViews;
-    RemoteViews views;
-    NotificationManager notificationManager;
-    Notification n;
-    AudioManager audioManager;
-    int result;
-    LocalBinder localBinder = new LocalBinder();
-    boolean isRepeat = false;
-    boolean isShowNotification = false;
+    private ArrayList<Songs> lstSongPlaying;
+    private ArrayList<Integer> histories;
+    private Random rand;
+    private boolean isShuffle = false;
+    private int currentSongPos;
+    private Songs currentSong;
+    private RemoteViews bigViews;
+    private RemoteViews views;
+    private NotificationManager notificationManager;
+    private Notification n;
+    private AudioManager audioManager;
+    private int result;
+    private LocalBinder localBinder = new LocalBinder();
+    private boolean isRepeat = false;
+    private boolean isShowNotification = false;
 
     MediaSessionCompat mediaSession;
     AudioManager.OnAudioFocusChangeListener afChangeListener = new AudioManager.OnAudioFocusChangeListener() {
@@ -93,10 +92,9 @@ public class PlayMusicService extends Service {
         }
     };
 
-    public void setDataForNotification(ArrayList<Songs> lstSong, int currentPos, Songs sogCurrent, String albumArtPath) {
+    public void setDataForNotification(ArrayList<Songs> lstSong, int currentPos, Songs sogCurrent) {
         this.lstSongPlaying = lstSong;
         this.currentSongPos = currentPos;
-        this.albumArtPath = albumArtPath;
         this.currentSong = sogCurrent;
 
         showLockScreen();
@@ -123,11 +121,9 @@ public class PlayMusicService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-        Log.d(TAG, "test called to cancel service");
         if (ACTION_STOP_SERVICE.equals(intent.getAction())) {
             PlayMusicActivity musicActivity = (PlayMusicActivity) AppController.getInstance().getPlayMusicActivity();
             MainActivity mainActivity = (MainActivity) AppController.getInstance().getMainActivity();
-            Log.d(TAG, "called to cancel service");
             if (musicActivity != null) {
                 musicActivity.changeButton();
             }
@@ -244,7 +240,6 @@ public class PlayMusicService extends Service {
         currentSongPos = getNextPosition();
         currentSong = lstSongPlaying.get(currentSongPos);
         String path = currentSong.getPath();
-        albumArtPath = currentSong.getAlbumImagePath();
         if (AppController.getInstance().getPlayMusicActivity() != null) {
             setAlbumArt();
         }
@@ -260,7 +255,6 @@ public class PlayMusicService extends Service {
         }
         currentSong = lstSongPlaying.get(currentSongPos);
         String path = currentSong.getPath();
-        albumArtPath = currentSong.getAlbumImagePath();
         if (AppController.getInstance().getPlayMusicActivity() != null) {
             setAlbumArt();
         }
@@ -364,7 +358,7 @@ public class PlayMusicService extends Service {
         this.isRepeat = repeat;
     }
 
-    public ArrayList<Songs> getLstSongPlaying() {
+    public ArrayList<Songs> getListSongPlaying() {
         return lstSongPlaying;
     }
 
@@ -382,10 +376,6 @@ public class PlayMusicService extends Service {
 
     public int getCurrentSongPos() {
         return currentSongPos;
-    }
-
-    public String getAlbumArtPath() {
-        return albumArtPath;
     }
 
     public Songs getCurrentSong() {

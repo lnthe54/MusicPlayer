@@ -1,6 +1,10 @@
 package com.example.lnthe54.musicplayer.view.activity;
 
 import android.Manifest;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -15,12 +19,19 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
+import android.widget.RelativeLayout;
+import android.widget.SeekBar;
+import android.widget.TextView;
 
 import com.example.lnthe54.musicplayer.R;
 import com.example.lnthe54.musicplayer.adapter.PagerAdapter;
+import com.example.lnthe54.musicplayer.config.AppController;
 import com.example.lnthe54.musicplayer.config.Config;
+import com.example.lnthe54.musicplayer.config.ConfigService;
 import com.example.lnthe54.musicplayer.model.Songs;
 import com.example.lnthe54.musicplayer.presenter.mainpresenter.MainPresenter;
+import com.example.lnthe54.musicplayer.service.PlayMusicService;
 import com.example.lnthe54.musicplayer.view.fragment.AlbumsTab;
 import com.example.lnthe54.musicplayer.view.fragment.ArtistsTab;
 import com.example.lnthe54.musicplayer.view.fragment.SongsTab;
@@ -35,25 +46,32 @@ public class MainActivity extends AppCompatActivity
     private ViewPager viewPager;
     private PagerAdapter pagerAdapter;
     private Toolbar toolbar;
-    //    public static ImageView ivPlay, ivPause;
-//    public static TextView tvNameSongPlaying, tvAuthorSongPlaying;
+    private TextView tvNameSongCurrent, tvAuthorSongCurrent;
+    private ImageView ivPlayPause;
+    private SeekBar seekBarPlaying;
+    private RelativeLayout songPlaying;
     private String[] permissions = {Manifest.permission.READ_EXTERNAL_STORAGE};
-
     private MainPresenter mainPresenter;
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-
-        if (!checkPermissions()) {
-            return;
+    private PlayMusicService serviceMusic;
+    BroadcastReceiver broadcastReceiverUpdatePlaying = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            serviceMusic = (PlayMusicService) AppController.getInstance().getPlayMusicService();
+            if (serviceMusic != null) {
+                songPlaying.setVisibility(View.VISIBLE);
+            } else {
+                songPlaying.setVisibility(View.GONE);
+            }
+            showCurrentSong();
+            if (serviceMusic != null) {
+                if (serviceMusic.isPlaying()) {
+                    ivPlayPause.setImageResource(R.drawable.pause_button);
+                } else {
+                    ivPlayPause.setImageResource(R.drawable.play_button);
+                }
+            }
         }
-
-        mainPresenter = new MainPresenter(this);
-        initViews();
-        addEvents();
-    }
+    };
 
     private boolean checkPermissions() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -78,41 +96,71 @@ public class MainActivity extends AppCompatActivity
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        AppController.getInstance().setMainActivity(this);
+
+        if (!checkPermissions()) {
+            return;
+        }
+
+        mainPresenter = new MainPresenter(this);
+        initViews();
+
+        if (serviceMusic != null) {
+            showCurrentSong();
+        }
+
+        registerBroadcastUpdatePlaying();
+    }
+
     private void initViews() {
         toolbar = findViewById(R.id.toolbar);
         toolbar.setTitle(Config.TITLE_TOOLBAR);
         setSupportActionBar(toolbar);
 
+        serviceMusic = (PlayMusicService) AppController.getInstance().getPlayMusicService();
+
         tabLayout = findViewById(R.id.tab_layout);
         mainPresenter.addTabLayout();
         viewPager = findViewById(R.id.pager);
+        songPlaying = findViewById(R.id.layout_play);
+        tvNameSongCurrent = findViewById(R.id.tv_name_song_playing);
+        tvAuthorSongCurrent = findViewById(R.id.tv_author_song_playing);
+        ivPlayPause = findViewById(R.id.iv_pause);
+        seekBarPlaying = findViewById(R.id.seek_bar);
         mainPresenter.addViewPager();
 
-//        tvNameSongPlaying = findViewById(R.id.tv_name_song_playing);
-//        tvAuthorSongPlaying = findViewById(R.id.tv_author_song_playing);
-//
-//        ivPlay = findViewById(R.id.iv_play);
-//        ivPause = findViewById(R.id.iv_pause);
+        if (serviceMusic != null) {
+            songPlaying.setVisibility(View.VISIBLE);
+        } else {
+            songPlaying.setVisibility(View.GONE);
+        }
+
     }
 
-    public void addEvents() {
-//        ivPlay.setOnClickListener(this);
-//        ivPause.setOnClickListener(this);
+    private void showCurrentSong() {
+        if (serviceMusic != null) {
+            tvNameSongCurrent.setText(serviceMusic.getCurrentSong().getNameSong());
+            tvAuthorSongCurrent.setText(serviceMusic.getCurrentSong().getAuthor());
+        }
+    }
+
+    private void registerBroadcastUpdatePlaying() {
+        IntentFilter intentFilter = new IntentFilter(ConfigService.ACTION_UPDATE_PlAY_STATUS);
+        registerReceiver(broadcastReceiverUpdatePlaying, intentFilter);
+    }
+
+    private void unRegisterBroadcastUpdatePlaying() {
+        unregisterReceiver(broadcastReceiverUpdatePlaying);
     }
 
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
-            case R.id.iv_play: {
-//                ivPlay.setVisibility(View.INVISIBLE);
-//                ivPause.setVisibility(View.VISIBLE);
-//                break;
-            }
-            case R.id.iv_pause: {
-//                ivPlay.setVisibility(View.VISIBLE);
-//                ivPause.setVisibility(View.INVISIBLE);
-//                break;
-            }
         }
     }
 
@@ -205,5 +253,11 @@ public class MainActivity extends AppCompatActivity
         SongsTab.rvListSong.setLayoutManager(new GridLayoutManager(this, Config.NUM_COLUMN));
         AlbumsTab.rvListAlbum.setLayoutManager(new GridLayoutManager(this, Config.NUM_COLUMN));
         ArtistsTab.rvArtist.setLayoutManager(new GridLayoutManager(this, Config.NUM_COLUMN));
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        unRegisterBroadcastUpdatePlaying();
     }
 }
