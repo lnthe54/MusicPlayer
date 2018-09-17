@@ -21,13 +21,11 @@ public class HeadSetReceiver extends BroadcastReceiver {
         PlayMusicService musicService = (PlayMusicService) AppController.getInstance().getPlayMusicService();
         if (AudioManager.ACTION_AUDIO_BECOMING_NOISY.equals(intent.getAction())) {
             if (musicActivity != null) {
-                //musicActivity.pauseMusic();
-                Log.d("playpause", "test");
+                musicActivity.pauseMusic();
             } else {
                 musicService.pauseMusic();
             }
-            Log.d("Headphone", "Headset unplugged");
-            //musicService.showNotification(true);
+            musicService.showNotification(true);
         }
 
     }

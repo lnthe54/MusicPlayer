@@ -84,15 +84,8 @@ public class SongsTab extends Fragment implements SongAdapter.onCallBack, PlayMu
                 int albumID = songCursor.getColumnIndex(MediaStore.Audio.Media.ALBUM_ID);
                 String albumArt = playPresenter.getCoverArtPath(albumID);
 
-                Log.d(TAG, "path" + albumPath);
                 listSong.add(new Songs(currentId, currentTitle, currentArtists, currentAlbum, albumArt, currentDuration, albumPath));
 
-                Collections.sort(listSong, new Comparator<Songs>() {
-                    @Override
-                    public int compare(Songs one, Songs two) {
-                        return one.getNameSong().compareTo(two.getNameSong());
-                    }
-                });
             } while (songCursor.moveToNext());
         }
     }
@@ -124,8 +117,6 @@ public class SongsTab extends Fragment implements SongAdapter.onCallBack, PlayMu
     public void showPlayMusicActivity(int position) {
         Intent openPlayMusic = new Intent(getContext(), PlayMusicActivity.class);
 
-        openPlayMusic.putExtra(Config.NAME_SONG, listSong.get(position).getNameSong());
-        openPlayMusic.putExtra(Config.NAME_SINGER, listSong.get(position).getAuthor());
         openPlayMusic.putExtra(Config.POSITION_SONG, position);
         openPlayMusic.putExtra(Config.PATH_SONG, listSong.get(position).getPath());
         openPlayMusic.putExtra(Config.IS_PLAYING, false);

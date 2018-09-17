@@ -23,6 +23,6 @@ public class PrevMusicBroadcastReceiver extends BroadcastReceiver {
         } else {
             musicService.backMusic();
         }
-        // musicService.showNotification(true);
+        musicService.showNotification(true);
     }
 }

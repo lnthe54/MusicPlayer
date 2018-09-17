@@ -20,12 +20,24 @@ public class MainPresenter {
         viewMain.addViewPager();
     }
 
+    public void playPauseMusic() {
+        viewMain.playPauseMusic();
+    }
+
     public void addListView() {
         viewMain.addListView();
     }
 
     public void addGridView() {
         viewMain.addGridView();
+    }
+
+    public void showCurrentSong() {
+        viewMain.showCurrentSong();
+    }
+
+    public void clickLayoutCurrentSong() {
+        viewMain.clickLayoutCurrentSong();
     }
 
     public interface ViewMain {
@@ -37,5 +49,11 @@ public class MainPresenter {
         void addListView();
 
         void addGridView();
+
+        void playPauseMusic();
+
+        void showCurrentSong();
+
+        void clickLayoutCurrentSong();
     }
 }

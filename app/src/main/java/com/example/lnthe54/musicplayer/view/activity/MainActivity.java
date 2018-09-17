@@ -62,7 +62,7 @@ public class MainActivity extends AppCompatActivity
             } else {
                 songPlaying.setVisibility(View.GONE);
             }
-            showCurrentSong();
+            mainPresenter.showCurrentSong();
             if (serviceMusic != null) {
                 if (serviceMusic.isPlaying()) {
                     ivPlayPause.setImageResource(R.drawable.pause_button);
@@ -72,6 +72,7 @@ public class MainActivity extends AppCompatActivity
             }
         }
     };
+    private boolean isSeeking;
 
     private boolean checkPermissions() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -111,10 +112,11 @@ public class MainActivity extends AppCompatActivity
         initViews();
 
         if (serviceMusic != null) {
-            showCurrentSong();
+            mainPresenter.showCurrentSong();
         }
 
         registerBroadcastUpdatePlaying();
+        addEvents();
     }
 
     private void initViews() {
@@ -128,6 +130,7 @@ public class MainActivity extends AppCompatActivity
         mainPresenter.addTabLayout();
         viewPager = findViewById(R.id.pager);
         songPlaying = findViewById(R.id.layout_play);
+        songPlaying.setOnClickListener(this);
         tvNameSongCurrent = findViewById(R.id.tv_name_song_playing);
         tvAuthorSongCurrent = findViewById(R.id.tv_author_song_playing);
         ivPlayPause = findViewById(R.id.iv_pause);
@@ -140,14 +143,13 @@ public class MainActivity extends AppCompatActivity
             songPlaying.setVisibility(View.GONE);
         }
 
+        isSeeking = false;
     }
 
-    private void showCurrentSong() {
-        if (serviceMusic != null) {
-            tvNameSongCurrent.setText(serviceMusic.getCurrentSong().getNameSong());
-            tvAuthorSongCurrent.setText(serviceMusic.getCurrentSong().getAuthor());
-        }
+    private void addEvents() {
+        ivPlayPause.setOnClickListener(this);
     }
+
 
     private void registerBroadcastUpdatePlaying() {
         IntentFilter intentFilter = new IntentFilter(ConfigService.ACTION_UPDATE_PlAY_STATUS);
@@ -161,6 +163,43 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
+            case R.id.iv_pause: {
+                mainPresenter.playPauseMusic();
+                break;
+            }
+
+            case R.id.layout_play: {
+                mainPresenter.clickLayoutCurrentSong();
+                break;
+            }
+        }
+    }
+
+    @Override
+    public void showCurrentSong() {
+        if (serviceMusic != null) {
+            tvNameSongCurrent.setText(serviceMusic.getCurrentSong().getNameSong());
+            tvAuthorSongCurrent.setText(serviceMusic.getCurrentSong().getAuthor());
+        }
+    }
+
+    @Override
+    public void clickLayoutCurrentSong() {
+        if (serviceMusic != null) {
+            Intent openPlay = new Intent(MainActivity.this, PlayMusicActivity.class);
+            openPlay.putExtra(Config.IS_PLAYING, true);
+            startActivity(openPlay);
+        }
+    }
+
+    @Override
+    public void playPauseMusic() {
+        if (serviceMusic.isPlaying()) {
+            ivPlayPause.setImageResource(R.drawable.play_button);
+            serviceMusic.pauseMusic();
+        } else {
+            ivPlayPause.setImageResource(R.drawable.pause_button);
+            serviceMusic.resumeMusic();
         }
     }
 

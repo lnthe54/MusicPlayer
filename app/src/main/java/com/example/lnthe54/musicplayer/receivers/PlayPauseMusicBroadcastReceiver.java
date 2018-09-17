@@ -24,6 +24,6 @@ public class PlayPauseMusicBroadcastReceiver extends BroadcastReceiver {
         } else {
             musicService.playPauseMusic();
         }
-        //musicService.showNotification(true);
+        musicService.showNotification(true);
     }
 }

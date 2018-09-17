@@ -7,6 +7,7 @@
         android:icon="@drawable/search"
         android:title="@string/icon_search"
         app:showAsAction="always"></item>
+
     <item
         android:id="@+id/icon_help"
         android:title="Random"

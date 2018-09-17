@@ -24,30 +24,30 @@ public class RemoteReceiver extends BroadcastReceiver {
                 switch (event.getKeyCode()) {
                     case KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE:
                         if (musicActivity != null) {
-                            //     musicActivity.playPauseMusic();
+                            musicActivity.playPauseMusic();
                         } else {
                             musicService.playPauseMusic();
                         }
                         musicService.setStatePlayPause();
-                        //musicService.showNotification(true);
+                        musicService.showNotification(true);
                         break;
                     case KeyEvent.KEYCODE_MEDIA_NEXT:
                         if (musicActivity != null) {
-                            //  musicActivity.nextMusic();
+                            musicActivity.nextMusic();
 
                         } else {
                             musicService.nextMusic();
                         }
-                        //musicService.showNotification(true);
+                        musicService.showNotification(true);
                         break;
                     case KeyEvent.KEYCODE_MEDIA_PREVIOUS:
                         if (musicActivity != null) {
-                            //  musicActivity.backMusic();
+                            musicActivity.backMusic();
 
                         } else {
                             musicService.backMusic();
                         }
-                        //musicService.showNotification(true);
+                        musicService.showNotification(true);
                         break;
                 }
             }

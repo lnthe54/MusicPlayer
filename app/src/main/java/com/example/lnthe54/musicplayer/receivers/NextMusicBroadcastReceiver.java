@@ -23,7 +23,7 @@ public class NextMusicBroadcastReceiver extends BroadcastReceiver {
         } else {
             musicService.nextMusic();
         }
-        //musicService.showNotification(true);
+        musicService.showNotification(true);
 
     }
 }

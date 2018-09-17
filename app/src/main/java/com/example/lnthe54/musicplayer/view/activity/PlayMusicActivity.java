@@ -40,9 +40,29 @@ import java.util.ArrayList;
 public class PlayMusicActivity extends AppCompatActivity
         implements SongAdapter.onCallBack, View.OnClickListener, PlayActivityPresenter.View {
 
-    private static final String TAG = "PlayMusicActivity";
     private Toolbar toolbar;
     private int totalTime;
+    private RecyclerView rvSong;
+    private ArrayList<Songs> listSong;
+    private SongAdapter songAdapter;
+    private CircularSeekBar circularSeekBar;
+    private boolean isShuffle = false;
+    private boolean isPlaying = true;
+    private boolean isSeeking;
+
+    private String nameSong;
+    private String nameSinger;
+    private String path;
+
+    private ImageView ivPause;
+    private TextView tvTimePlayed;
+    private PlayMusicService service;
+
+    private PlayActivityPresenter activityPresenter;
+    private ImageView ivPreviousTrack, ivNextTrack;
+    private ImageView ivShuffle, ivRepeat;
+    private int currentPos;
+
     ServiceConnection serviceConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName name, IBinder iBinder) {
@@ -59,7 +79,7 @@ public class PlayMusicActivity extends AppCompatActivity
         public void onServiceDisconnected(ComponentName name) {
         }
     };
-    private int currentPos;
+
     BroadcastReceiver broadcastReceiverSongCompleted = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -71,36 +91,17 @@ public class PlayMusicActivity extends AppCompatActivity
             Common.updateMainActivity();
         }
     };
-    BroadcastReceiver broadcastReceiverSwitchSong = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            currentPos = getIntent().getIntExtra(Config.POSITION_SONG, 0);
-            path = listSong.get(currentPos).getPath();
-            service.setDataForNotification(listSong,
-                    currentPos, listSong.get(currentPos));
-            activityPresenter.playMusic();
-//            service.showNotification(true);
-        }
-    };
-    private RecyclerView rvSong;
-    private ArrayList<Songs> listSong = new ArrayList<>();
-    private SongAdapter songAdapter;
-    private CircularSeekBar circularSeekBar;
-    private boolean isShuffle = false;
+//    BroadcastReceiver broadcastReceiverSwitchSong = new BroadcastReceiver() {
+//        @Override
+//        public void onReceive(Context context, Intent intent) {
+//            currentPos = intent.getExtras().getInt(Config.POSITION_SONG);
+//            path = listSong.get(currentPos).getPath();
+//            service.setDataForNotification(listSong, currentPos, listSong.get(currentPos));
+//            activityPresenter.playMusic();
+////            service.showNotification(true);
+//        }
+//    };
 
-    private String nameSong;
-    private String nameSinger;
-
-    private ImageView ivPause;
-    private TextView tvTimePlayed;
-    private PlayMusicService service;
-    private String path;
-
-    private PlayActivityPresenter activityPresenter;
-    private ImageView ivPreviousTrack, ivNextTrack;
-    private boolean isPlaying = true;
-    private boolean isSeeking;
-    private ImageView ivShuffle, ivRepeat;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -118,20 +119,20 @@ public class PlayMusicActivity extends AppCompatActivity
             initPlayService();
         } else {
             activityPresenter.updateCircularSeekbar();
+            totalTime = service.getTotalTime();
+            service.showNotification(!service.isShowNotification());
             setName();
             if (!isPlaying) {
                 activityPresenter.playMusic();
             }
-
             updateRepeatButton();
             updateShuffleButton();
             updatePlayPauseButton();
-
         }
 
-        registerBroadcastSongComplete();
-        registerBroadcastSwitchSong();
         addEvent();
+        registerBroadcastSongComplete();
+//        registerBroadcastSwitchSong();
 
         activityPresenter.updateHome();
     }
@@ -162,7 +163,6 @@ public class PlayMusicActivity extends AppCompatActivity
         ivShuffle = findViewById(R.id.iv_shuffle);
 
         circularSeekBar = findViewById(R.id.circular_seek_bar);
-        activityPresenter.changeCircular();
 
         ivPause = findViewById(R.id.btn_pause);
         rvSong = findViewById(R.id.rv_song);
@@ -177,6 +177,8 @@ public class PlayMusicActivity extends AppCompatActivity
         ivShuffle.setOnClickListener(this);
         ivNextTrack.setOnClickListener(this);
         ivPreviousTrack.setOnClickListener(this);
+
+        activityPresenter.changeCircular();
     }
 
     private void registerBroadcastSongComplete() {
@@ -189,15 +191,15 @@ public class PlayMusicActivity extends AppCompatActivity
         unregisterReceiver(broadcastReceiverSongCompleted);
     }
 
-    private void registerBroadcastSwitchSong() {
-        IntentFilter intentFilter = new IntentFilter();
-        intentFilter.addAction(ConfigService.ACTION_SWITCH_SONG);
-        registerReceiver(broadcastReceiverSwitchSong, intentFilter);
-    }
-
-    private void unRegisterBroadcastSwitchSong() {
-        unregisterReceiver(broadcastReceiverSwitchSong);
-    }
+//    private void registerBroadcastSwitchSong() {
+//        IntentFilter intentFilter = new IntentFilter();
+//        intentFilter.addAction(ConfigService.ACTION_SWITCH_SONG);
+//        registerReceiver(broadcastReceiverSwitchSong, intentFilter);
+//    }
+//
+//    private void unRegisterBroadcastSwitchSong() {
+//        unregisterReceiver(broadcastReceiverSwitchSong);
+//    }
 
     @Override
     public void updateCircularSeekbar() {
@@ -212,7 +214,7 @@ public class PlayMusicActivity extends AppCompatActivity
         musicHandler.post(new Runnable() {
             @Override
             public void run() {
-                updateCircularSeekbar();
+                activityPresenter.updateCircularSeekbar();
             }
         });
     }
@@ -253,6 +255,8 @@ public class PlayMusicActivity extends AppCompatActivity
         switch (view.getId()) {
             case R.id.btn_pause: {
                 activityPresenter.playPauseMusic();
+                service.showNotification(true);
+
                 break;
             }
 
@@ -289,11 +293,13 @@ public class PlayMusicActivity extends AppCompatActivity
 
             case R.id.iv_next_track: {
                 nextMusic();
+                service.showNotification(true);
                 break;
             }
 
             case R.id.iv_previous_track: {
                 backMusic();
+                service.showNotification(true);
                 break;
             }
         }
@@ -341,11 +347,11 @@ public class PlayMusicActivity extends AppCompatActivity
         service.playMusic(path);
         totalTime = service.getTotalTime();
         Songs songs = listSong.get(currentPos);
-        service.setDataForNotification(listSong, currentPos, songs);
+        service.setDataForNotification(listSong, currentPos, songs, songs.getAlbumImagePath());
         Intent openService = new Intent(this, PlayMusicService.class);
         startService(openService);
         setName();
-//        service.showNotification(true);
+        service.showNotification(true);
         activityPresenter.updateHome();
     }
 
@@ -437,11 +443,10 @@ public class PlayMusicActivity extends AppCompatActivity
             listSong = service.getListSongPlaying();
             isShuffle = service.isShuffle();
         } else {
-            path = intent.getStringExtra(Config.PATH_SONG);
-            currentPos = intent.getIntExtra(Config.POSITION_SONG, 0);
-            listSong = intent.getParcelableArrayListExtra(Config.LIST_SONG);
+            path = intent.getExtras().getString(Config.PATH_SONG);
+            currentPos = intent.getExtras().getInt(Config.POSITION_SONG);
+            listSong = intent.getExtras().getParcelableArrayList(Config.LIST_SONG);
         }
-
     }
 
     @Override
@@ -457,7 +462,7 @@ public class PlayMusicActivity extends AppCompatActivity
     protected void onDestroy() {
         super.onDestroy();
         unRegisterBroadcastSongComplete();
-        unRegisterBroadcastSwitchSong();
+//        unRegisterBroadcastSwitchSong();
         AppController.getInstance().setPlayMusicActivity(null);
     }
 }
