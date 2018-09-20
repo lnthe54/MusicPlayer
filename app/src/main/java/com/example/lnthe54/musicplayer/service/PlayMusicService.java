@@ -18,6 +18,8 @@ import android.support.v4.app.NotificationCompat;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
+import android.util.Log;
+import android.view.View;
 import android.widget.RemoteViews;
 
 import com.example.lnthe54.musicplayer.R;
@@ -33,6 +35,8 @@ import com.example.lnthe54.musicplayer.view.activity.PlayMusicActivity;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Random;
+
+import static android.support.constraint.Constraints.TAG;
 
 /**
  * @author lnthe54 on 9/6/2018
@@ -219,38 +223,47 @@ public class PlayMusicService extends Service {
         PendingIntent pendingIntentStopSelf = PendingIntent.getService(this, 0, intentStopSelf, PendingIntent.FLAG_UPDATE_CURRENT);
 
 
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext());
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext(), "ABC");
         builder.setSmallIcon(R.drawable.beats_logo);
         builder.setContentIntent(pendingIntent);
         builder.setContent(views);
         builder.setCustomBigContentView(bigViews);
 
 
-//        bigViews.setTextViewText(R.id.tv_song_title_noti, currentSong.getTitle());
-//        bigViews.setTextViewText(R.id.tv_artist_noti, currentSong.getArtist());
-//
-//        views.setTextViewText(R.id.tv_song_title_noti, currentSong.getTitle());
-//        views.setTextViewText(R.id.tv_artist_noti, currentSong.getArtist());
-//
-//
+        bigViews.setTextViewText(R.id.tv_name_song, currentSong.getNameSong());
+        bigViews.setTextViewText(R.id.tv_name_singer, currentSong.getAuthor());
+
+        views.setTextViewText(R.id.tv_name_song, currentSong.getNameSong());
+        views.setTextViewText(R.id.tv_name_singer, currentSong.getAuthor());
+
         if (albumArtPath != null && !albumArtPath.isEmpty()) {
             Bitmap bitmap = BitmapFactory.decodeFile(albumArtPath);
+//            Log.d(TAG, "album path: " + albumArtPath);
             bigViews.setImageViewBitmap(R.id.iv_notification, bitmap);
             views.setImageViewBitmap(R.id.iv_notification, bitmap);
         } else {
             bigViews.setImageViewResource(R.id.iv_notification, R.drawable.headphones);
             views.setImageViewResource(R.id.iv_notification, R.drawable.headphones);
         }
-//
+
         n = builder.build();
-//        bigViews.setOnClickPendingIntent(R.id.btn_close_noti, pendingIntentStopSelf);
+
+
+        if (!isPlaying()) {
+            bigViews.setViewVisibility(R.id.ic_close, View.VISIBLE);
+            views.setViewVisibility(R.id.ic_close, View.VISIBLE);
+            bigViews.setOnClickPendingIntent(R.id.ic_close, pendingIntentStopSelf);
+            views.setOnClickPendingIntent(R.id.ic_close, pendingIntentStopSelf);
+        } else {
+            bigViews.setViewVisibility(R.id.ic_close, View.GONE);
+            views.setViewVisibility(R.id.ic_close, View.GONE);
+        }
 //        bigViews.setOnClickPendingIntent(R.id.btn_prev_noti, pendingIntentPrev);
 //        bigViews.setOnClickPendingIntent(R.id.btn_next_noti, pendingIntentNext);
-//        bigViews.setOnClickPendingIntent(R.id.btn_play_pause_noti, pendingIntentPlayPause);
-//
-//        views.setOnClickPendingIntent(R.id.btn_close_noti, pendingIntentStopSelf);
+        bigViews.setOnClickPendingIntent(R.id.iv_pause_notification, pendingIntentPlayPause);
+
 //        views.setOnClickPendingIntent(R.id.btn_next_noti, pendingIntentNext);
-//        views.setOnClickPendingIntent(R.id.btn_play_pause_noti, pendingIntentPlayPause);
+        views.setOnClickPendingIntent(R.id.iv_pause_notification, pendingIntentPlayPause);
 
         if (isUpdate) {
             startForeground(NOTIFICATION_ID, n);
@@ -261,7 +274,7 @@ public class PlayMusicService extends Service {
     public void pauseMusic() {
         if (mediaPlayer != null && mediaPlayer.isPlaying()) {
             mediaPlayer.pause();
-//            changePlayPauseState();
+            changePlayPauseState();
         }
     }
 
@@ -275,7 +288,7 @@ public class PlayMusicService extends Service {
     public void resumeMusic() {
         if (mediaPlayer != null && !mediaPlayer.isPlaying()) {
             mediaPlayer.start();
-//            changePlayPauseState();
+            changePlayPauseState();
         }
     }
 
@@ -288,7 +301,7 @@ public class PlayMusicService extends Service {
                 if (AppController.getInstance().getPlayMusicActivity() != null) {
                     Intent intent = new Intent(ConfigService.ACTION_COMPLETE_SONG);
                     sendBroadcast(intent);
-                    //showNotification(true);
+                    showNotification(true);
                     Common.updateMainActivity();
                 } else {
                     if (isRepeat()) {
@@ -344,7 +357,7 @@ public class PlayMusicService extends Service {
         if (isPlaying()) {
             bigViews.setImageViewResource(R.id.iv_pause_notification, R.drawable.pause_notification);
         } else {
-//            bigViews.setImageViewResource(R.id.iv_, R.drawable.pb_play);
+            bigViews.setImageViewResource(R.id.iv_pause_notification, R.drawable.play_notification);
         }
         startForeground(NOTIFICATION_ID, n);
     }
