@@ -39,8 +39,12 @@ public class PlayActivityPresenter {
         view.playMusic();
     }
 
-    public void updateCircularSeekbar() {
-        view.updateCircularSeekbar();
+    public void setName() {
+        view.setName();
+    }
+
+    public void updateCircularSeekBar() {
+        view.updateCircularSeekBar();
     }
 
     public interface View {
@@ -58,6 +62,8 @@ public class PlayActivityPresenter {
 
         void playMusic();
 
-        void updateCircularSeekbar();
+        void setName();
+
+        void updateCircularSeekBar();
     }
 }

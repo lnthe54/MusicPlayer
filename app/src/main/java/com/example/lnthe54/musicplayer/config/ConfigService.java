@@ -10,6 +10,5 @@ public class ConfigService {
     public static final String ACTION_PREV = "com.example.lnthe54.musicplayer.ACTION_PREV";
     public static final String ACTION_PLAY_PAUSE = "com.example.lnthe54.musicplayer.ACTION_PLAY_PAUSE";
     public static final String ACTION_NEXT = "com.example.lnthe54.musicplayer.ACTION_NEXT";
-    public static final String ACTION_CHANGE_ALBUM_ART = "com.example.lnthe54.musicplayer.ACTION_CHANGE_ALBUM_ART";
     public static final String ACTION_UPDATE_PlAY_STATUS = "com.example.lnthe54.musicplayer.ACTION_UPDATE_PlAY_STATUS";
 }

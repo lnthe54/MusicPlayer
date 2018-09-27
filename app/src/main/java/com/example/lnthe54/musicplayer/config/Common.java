@@ -31,7 +31,7 @@ public class Common {
     public static void updateMainActivity() {
         MainActivity mainActivity = (MainActivity) AppController.getInstance().getMainActivity();
         if (mainActivity != null) {
-//            mainActivity.showCurrentSong();
+            mainActivity.showCurrentSong();
         }
     }
 }

@@ -44,7 +44,7 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.ViewHolder> 
         if (path != null) {
             Glide.with(context).load(path).into(holder.ivAlbum);
         } else {
-            holder.ivAlbum.setImageResource(R.drawable.bg_album_default);
+            holder.ivAlbum.setImageResource(R.drawable.headphones);
         }
         holder.tvNameAlbum.setText(albums.getNameAlbum());
         holder.tvAuthor.setText(albums.getAuthor());

@@ -71,7 +71,7 @@ public class PlayMusicActivity extends AppCompatActivity
             AppController.getInstance().setPlayMusicService(service);
             service.setRepeat(false);
             activityPresenter.playMusic();
-            activityPresenter.updateCircularSeekbar();
+            activityPresenter.updateCircularSeekBar();
             totalTime = service.getTotalTime();
         }
 
@@ -85,22 +85,23 @@ public class PlayMusicActivity extends AppCompatActivity
         public void onReceive(Context context, Intent intent) {
             nextMusic();
             totalTime = service.getTotalTime();
-            activityPresenter.updateCircularSeekbar();
+            activityPresenter.updateCircularSeekBar();
             activityPresenter.updateHome();
-//            service.showNotification(true);
+            service.showNotification(true);
             Common.updateMainActivity();
         }
     };
-//    BroadcastReceiver broadcastReceiverSwitchSong = new BroadcastReceiver() {
-//        @Override
-//        public void onReceive(Context context, Intent intent) {
-//            currentPos = intent.getExtras().getInt(Config.POSITION_SONG);
-//            path = listSong.get(currentPos).getPath();
-//            service.setDataForNotification(listSong, currentPos, listSong.get(currentPos));
-//            activityPresenter.playMusic();
-////            service.showNotification(true);
-//        }
-//    };
+    BroadcastReceiver broadcastReceiverSwitchSong = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            currentPos = intent.getExtras().getInt(Config.ID_SWITCH);
+            path = listSong.get(currentPos).getPath();
+            service.setDataForNotification(listSong, currentPos, listSong.get(currentPos),
+                    listSong.get(currentPos).getAlbumImagePath());
+            activityPresenter.playMusic();
+            service.showNotification(true);
+        }
+    };
 
 
     @Override
@@ -108,20 +109,20 @@ public class PlayMusicActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_play_music);
 
-        AppController.getInstance().setPlayMusicActivity(PlayMusicActivity.this);
+        AppController.getInstance().setPlayMusicActivity(this);
         service = (PlayMusicService) AppController.getInstance().getPlayMusicService();
         activityPresenter = new PlayActivityPresenter(this);
 
-        getSongTabIntent();
+        activityPresenter.getDataIntent();
         initViews();
 
         if (service == null) {
             initPlayService();
         } else {
-            activityPresenter.updateCircularSeekbar();
+            activityPresenter.updateCircularSeekBar();
             totalTime = service.getTotalTime();
             service.showNotification(!service.isShowNotification());
-            setName();
+            activityPresenter.setName();
             if (!isPlaying) {
                 activityPresenter.playMusic();
             }
@@ -132,7 +133,7 @@ public class PlayMusicActivity extends AppCompatActivity
 
         addEvent();
         registerBroadcastSongComplete();
-//        registerBroadcastSwitchSong();
+        registerBroadcastSwitchSong();
 
         activityPresenter.updateHome();
     }
@@ -142,12 +143,8 @@ public class PlayMusicActivity extends AppCompatActivity
         bindService(intent, serviceConnection, BIND_AUTO_CREATE);
     }
 
-    private void getSongTabIntent() {
-        activityPresenter.getDataIntent();
-    }
-
     private void initViews() {
-        setName();
+        activityPresenter.setName();
         toolbar = findViewById(R.id.toolbar);
         toolbar.setTitle(nameSong);
         toolbar.setSubtitle(nameSinger);
@@ -191,18 +188,18 @@ public class PlayMusicActivity extends AppCompatActivity
         unregisterReceiver(broadcastReceiverSongCompleted);
     }
 
-//    private void registerBroadcastSwitchSong() {
-//        IntentFilter intentFilter = new IntentFilter();
-//        intentFilter.addAction(ConfigService.ACTION_SWITCH_SONG);
-//        registerReceiver(broadcastReceiverSwitchSong, intentFilter);
-//    }
-//
-//    private void unRegisterBroadcastSwitchSong() {
-//        unregisterReceiver(broadcastReceiverSwitchSong);
-//    }
+    private void registerBroadcastSwitchSong() {
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(ConfigService.ACTION_SWITCH_SONG);
+        registerReceiver(broadcastReceiverSwitchSong, intentFilter);
+    }
+
+    private void unRegisterBroadcastSwitchSong() {
+        unregisterReceiver(broadcastReceiverSwitchSong);
+    }
 
     @Override
-    public void updateCircularSeekbar() {
+    public void updateCircularSeekBar() {
         circularSeekBar.setMax(totalTime);
         int currentLength = service.getCurrentLength();
 
@@ -214,7 +211,7 @@ public class PlayMusicActivity extends AppCompatActivity
         musicHandler.post(new Runnable() {
             @Override
             public void run() {
-                activityPresenter.updateCircularSeekbar();
+                activityPresenter.updateCircularSeekBar();
             }
         });
     }
@@ -243,6 +240,9 @@ public class PlayMusicActivity extends AppCompatActivity
 
     @Override
     public void onClickSong(int position) {
+        Intent intent = new Intent(ConfigService.ACTION_SWITCH_SONG);
+        intent.putExtra(Config.ID_SWITCH, position);
+        sendBroadcast(intent);
     }
 
     @Override
@@ -256,7 +256,6 @@ public class PlayMusicActivity extends AppCompatActivity
             case R.id.btn_pause: {
                 activityPresenter.playPauseMusic();
                 service.showNotification(true);
-
                 break;
             }
 
@@ -326,7 +325,7 @@ public class PlayMusicActivity extends AppCompatActivity
                     ivPause.setImageResource(R.drawable.pause_button1);
                 }
                 isSeeking = false;
-                activityPresenter.updateCircularSeekbar();
+                activityPresenter.updateCircularSeekBar();
             }
         });
     }
@@ -337,7 +336,8 @@ public class PlayMusicActivity extends AppCompatActivity
         sendBroadcast(intent);
     }
 
-    private void setName() {
+    @Override
+    public void setName() {
         nameSong = listSong.get(currentPos).getNameSong();
         nameSinger = listSong.get(currentPos).getAuthor();
     }
@@ -350,7 +350,7 @@ public class PlayMusicActivity extends AppCompatActivity
         service.setDataForNotification(listSong, currentPos, songs, songs.getAlbumImagePath());
         Intent openService = new Intent(this, PlayMusicService.class);
         startService(openService);
-        setName();
+        activityPresenter.setName();
         service.showNotification(true);
         activityPresenter.updateHome();
     }
@@ -364,10 +364,9 @@ public class PlayMusicActivity extends AppCompatActivity
             ivPause.setImageResource(R.drawable.pause_button1);
             service.resumeMusic();
         }
-//        service.changePlayPauseState();
+        service.changePlayPauseState();
         activityPresenter.updateHome();
     }
-
     public void resumeMusic() {
         if (!service.isPlaying()) {
             ivPause.setImageResource(R.drawable.pause_button1);
@@ -462,7 +461,7 @@ public class PlayMusicActivity extends AppCompatActivity
     protected void onDestroy() {
         super.onDestroy();
         unRegisterBroadcastSongComplete();
-//        unRegisterBroadcastSwitchSong();
+        unRegisterBroadcastSwitchSong();
         AppController.getInstance().setPlayMusicActivity(null);
     }
 }

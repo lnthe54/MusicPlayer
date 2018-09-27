@@ -18,7 +18,6 @@ import android.support.v4.app.NotificationCompat;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
-import android.util.Log;
 import android.view.View;
 import android.widget.RemoteViews;
 
@@ -36,8 +35,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Random;
 
-import static android.support.constraint.Constraints.TAG;
-
 /**
  * @author lnthe54 on 9/6/2018
  * @project MusicPlayer
@@ -48,7 +45,6 @@ public class PlayMusicService extends Service {
 
     private static MediaPlayer mediaPlayer;
     private ArrayList<Songs> lstSongPlaying;
-    private ArrayList<Integer> histories;
     private Random rand;
     private boolean isShuffle = false;
     private int currentSongPos;
@@ -73,7 +69,7 @@ public class PlayMusicService extends Service {
                 case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT:
 
                     if (activity == null) {
-                        pauseMusic();
+                        activity.pauseMusic();
                     } else {
                         activity.pauseMusic();
                     }
@@ -113,7 +109,6 @@ public class PlayMusicService extends Service {
         result = audioManager.requestAudioFocus(afChangeListener,
                 AudioManager.STREAM_MUSIC,
                 AudioManager.AUDIOFOCUS_GAIN);
-        histories = new ArrayList<>();
         rand = new Random();
     }
 
@@ -132,9 +127,6 @@ public class PlayMusicService extends Service {
             if (musicActivity != null) {
                 musicActivity.changeButton();
             }
-//                if(mainActivity != null){
-//                    mainActivity.updatePlayPauseButton();
-//                }
             if (musicActivity == null && mainActivity == null) {
                 stopSelf();
             }
@@ -183,7 +175,6 @@ public class PlayMusicService extends Service {
         mediaSession.setActive(true);
     }
 
-
     public boolean isShowNotification() {
         return isShowNotification;
     }
@@ -193,6 +184,10 @@ public class PlayMusicService extends Service {
         bigViews = new RemoteViews(getPackageName(), R.layout.notification);
         views = new RemoteViews(getPackageName(), R.layout.notification);
         Intent intent = new Intent(getApplicationContext(), PlayMusicActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        intent.setAction(Intent.ACTION_MAIN);
+        intent.addCategory(Intent.CATEGORY_LAUNCHER);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.putExtra(Config.IS_PLAYING, true);
 
         if (isPlaying()) {
@@ -203,32 +198,34 @@ public class PlayMusicService extends Service {
             bigViews.setImageViewResource(R.id.iv_pause_notification, R.drawable.play_notification);
         }
 
-
-        PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(),
+                0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         Intent intentPrev = new Intent(ConfigService.ACTION_PREV);
         intentPrev.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-        PendingIntent pendingIntentPrev = PendingIntent.getBroadcast(getApplicationContext(), 0, intentPrev, PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent pendingIntentPrev = PendingIntent.getBroadcast(getApplicationContext(),
+                0, intentPrev, PendingIntent.FLAG_UPDATE_CURRENT);
 
         Intent intentPlayPause = new Intent(ConfigService.ACTION_PLAY_PAUSE);
         intentPlayPause.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-        PendingIntent pendingIntentPlayPause = PendingIntent.getBroadcast(getApplicationContext(), 0, intentPlayPause, PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent pendingIntentPlayPause = PendingIntent.getBroadcast(getApplicationContext(),
+                0, intentPlayPause, PendingIntent.FLAG_UPDATE_CURRENT);
 
         Intent intentNext = new Intent(ConfigService.ACTION_NEXT);
         intentNext.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-        PendingIntent pendingIntentNext = PendingIntent.getBroadcast(getApplicationContext(), 0, intentNext, PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent pendingIntentNext = PendingIntent.getBroadcast(getApplicationContext(),
+                0, intentNext, PendingIntent.FLAG_UPDATE_CURRENT);
 
         Intent intentStopSelf = new Intent(this, PlayMusicService.class);
         intentStopSelf.setAction(PlayMusicService.ACTION_STOP_SERVICE);
-        PendingIntent pendingIntentStopSelf = PendingIntent.getService(this, 0, intentStopSelf, PendingIntent.FLAG_UPDATE_CURRENT);
-
+        PendingIntent pendingIntentStopSelf = PendingIntent.getService(this,
+                0, intentStopSelf, PendingIntent.FLAG_UPDATE_CURRENT);
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext(), "ABC");
-        builder.setSmallIcon(R.drawable.beats_logo);
+        builder.setSmallIcon(R.drawable.icon_beats);
         builder.setContentIntent(pendingIntent);
         builder.setContent(views);
         builder.setCustomBigContentView(bigViews);
-
 
         bigViews.setTextViewText(R.id.tv_name_song, currentSong.getNameSong());
         bigViews.setTextViewText(R.id.tv_name_singer, currentSong.getAuthor());
@@ -238,7 +235,6 @@ public class PlayMusicService extends Service {
 
         if (albumArtPath != null && !albumArtPath.isEmpty()) {
             Bitmap bitmap = BitmapFactory.decodeFile(albumArtPath);
-//            Log.d(TAG, "album path: " + albumArtPath);
             bigViews.setImageViewBitmap(R.id.iv_notification, bitmap);
             views.setImageViewBitmap(R.id.iv_notification, bitmap);
         } else {
@@ -247,7 +243,6 @@ public class PlayMusicService extends Service {
         }
 
         n = builder.build();
-
 
         if (!isPlaying()) {
             bigViews.setViewVisibility(R.id.ic_close, View.VISIBLE);
@@ -258,11 +253,11 @@ public class PlayMusicService extends Service {
             bigViews.setViewVisibility(R.id.ic_close, View.GONE);
             views.setViewVisibility(R.id.ic_close, View.GONE);
         }
-//        bigViews.setOnClickPendingIntent(R.id.btn_prev_noti, pendingIntentPrev);
-//        bigViews.setOnClickPendingIntent(R.id.btn_next_noti, pendingIntentNext);
+        bigViews.setOnClickPendingIntent(R.id.iv_previous_track_notification, pendingIntentPrev);
+        bigViews.setOnClickPendingIntent(R.id.iv_next_track_notification, pendingIntentNext);
         bigViews.setOnClickPendingIntent(R.id.iv_pause_notification, pendingIntentPlayPause);
 
-//        views.setOnClickPendingIntent(R.id.btn_next_noti, pendingIntentNext);
+        views.setOnClickPendingIntent(R.id.iv_next_track_notification, pendingIntentNext);
         views.setOnClickPendingIntent(R.id.iv_pause_notification, pendingIntentPlayPause);
 
         if (isUpdate) {
@@ -327,8 +322,6 @@ public class PlayMusicService extends Service {
         currentSongPos = getNextPosition();
         currentSong = lstSongPlaying.get(currentSongPos);
         String path = currentSong.getPath();
-        albumArtPath = currentSong.getAlbumImagePath();
-        histories.add(currentSongPos);
         playMusic(path);
     }
 
@@ -340,7 +333,6 @@ public class PlayMusicService extends Service {
         }
         currentSong = lstSongPlaying.get(currentSongPos);
         String path = currentSong.getPath();
-        albumArtPath = currentSong.getAlbumImagePath();
         playMusic(path);
     }
 
@@ -392,9 +384,7 @@ public class PlayMusicService extends Service {
                 return 0;
             }
         }
-        if (histories.size() > lstSongPlaying.size() - 1) {
-            histories.remove(0);
-        }
+
         if (currentSongPos < 0) {
             return 0;
         }
@@ -404,7 +394,7 @@ public class PlayMusicService extends Service {
         if (isShuffle) {
             int newSongPosition = currentSongPos;
 
-            while (newSongPosition == currentSongPos || histories.contains(newSongPosition)) {
+            while (newSongPosition == currentSongPos) {
                 newSongPosition = rand.nextInt(lstSongPlaying.size());
             }
             return newSongPosition;

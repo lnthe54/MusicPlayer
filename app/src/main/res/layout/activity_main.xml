@@ -43,7 +43,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:padding="5dp"
-            android:src="@drawable/beats_logo1" />
+            android:src="@drawable/icon_beats_playing" />
 
         <TextView
             android:id="@+id/tv_name_song_playing"

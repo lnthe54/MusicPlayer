@@ -8,6 +8,7 @@ import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
@@ -53,6 +54,8 @@ public class MainActivity extends AppCompatActivity
     private String[] permissions = {Manifest.permission.READ_EXTERNAL_STORAGE};
     private MainPresenter mainPresenter;
     private PlayMusicService serviceMusic;
+
+    private int totalTime;
     BroadcastReceiver broadcastReceiverUpdatePlaying = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -64,6 +67,8 @@ public class MainActivity extends AppCompatActivity
             }
             mainPresenter.showCurrentSong();
             if (serviceMusic != null) {
+                totalTime = serviceMusic.getTotalTime();
+                mainPresenter.updateSeekBar();
                 if (serviceMusic.isPlaying()) {
                     ivPlayPause.setImageResource(R.drawable.pause_button);
                 } else {
@@ -113,6 +118,7 @@ public class MainActivity extends AppCompatActivity
 
         if (serviceMusic != null) {
             mainPresenter.showCurrentSong();
+            mainPresenter.updateSeekBar();
         }
 
         registerBroadcastUpdatePlaying();
@@ -139,6 +145,7 @@ public class MainActivity extends AppCompatActivity
 
         if (serviceMusic != null) {
             songPlaying.setVisibility(View.VISIBLE);
+            totalTime = serviceMusic.getTotalTime();
         } else {
             songPlaying.setVisibility(View.GONE);
         }
@@ -148,6 +155,7 @@ public class MainActivity extends AppCompatActivity
 
     private void addEvents() {
         ivPlayPause.setOnClickListener(this);
+        mainPresenter.changeSeekBar();
     }
 
 
@@ -184,6 +192,49 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
+    public void updateSeekBar() {
+        seekBarPlaying.setMax(totalTime);
+        int currentLength = serviceMusic.getCurrentLength();
+        if (!isSeeking) {
+            seekBarPlaying.setProgress(currentLength);
+        }
+
+        Handler musicHandler = new Handler();
+        musicHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                mainPresenter.updateSeekBar();
+            }
+        });
+    }
+
+    @Override
+    public void changeSeekBar() {
+        seekBarPlaying.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
+
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+                serviceMusic.seekTo(seekBar.getProgress());
+                if (!serviceMusic.isPlaying()) {
+                    serviceMusic.resumeMusic();
+                    ivPlayPause.setImageResource(R.drawable.pause_button);
+                }
+                isSeeking = false;
+                mainPresenter.updateSeekBar();
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                isSeeking = true;
+            }
+        });
+    }
+
+    @Override
     public void clickLayoutCurrentSong() {
         if (serviceMusic != null) {
             Intent openPlay = new Intent(MainActivity.this, PlayMusicActivity.class);
@@ -217,7 +268,6 @@ public class MainActivity extends AppCompatActivity
         switch (item.getItemId()) {
             case R.id.icon_list_view: {
                 mainPresenter.addListView();
-
                 break;
             }
             case R.id.icon_grid_view: {

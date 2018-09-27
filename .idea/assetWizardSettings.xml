@@ -28,8 +28,9 @@
                         </option>
                         <option name="values">
                           <map>
-                            <entry key="outputName" value="ic_close_black_24dp" />
-                            <entry key="sourceFile" value="C:\Users\lnthe54" />
+                            <entry key="assetSourceType" value="FILE" />
+                            <entry key="outputName" value="ic_beats_logo3" />
+                            <entry key="sourceFile" value="C:\Users\lnthe54\AndroidStudioProjects\MusicPlayer\app\src\main\res\drawable\beats_logo3.svg" />
                           </map>
                         </option>
                       </PersistentState>

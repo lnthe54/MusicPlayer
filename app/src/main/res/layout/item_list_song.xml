@@ -9,7 +9,7 @@
         android:layout_width="40dp"
         android:layout_height="40dp"
         android:layout_centerVertical="true"
-        android:src="@drawable/beats_logo" />
+        android:src="@drawable/icon_beats" />
 
     <TextView
         android:id="@+id/tv_song"

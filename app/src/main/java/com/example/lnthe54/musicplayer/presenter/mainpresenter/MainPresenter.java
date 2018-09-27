@@ -36,6 +36,14 @@ public class MainPresenter {
         viewMain.showCurrentSong();
     }
 
+    public void updateSeekBar() {
+        viewMain.updateSeekBar();
+    }
+
+    public void changeSeekBar() {
+        viewMain.changeSeekBar();
+    }
+
     public void clickLayoutCurrentSong() {
         viewMain.clickLayoutCurrentSong();
     }
@@ -54,6 +62,11 @@ public class MainPresenter {
 
         void showCurrentSong();
 
+        void updateSeekBar();
+
+        void changeSeekBar();
+
         void clickLayoutCurrentSong();
+
     }
 }
